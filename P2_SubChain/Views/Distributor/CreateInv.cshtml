@@ -1,0 +1,57 @@
+﻿@model P2_SubChain.Models.Invoice
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<header>
+    <img src="~/images/logo.svg" alt="" />
+    <div class="burger">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+    </div>
+    <nav class="cust__nav">
+        <ul>
+            <li><a href="~/Distributor/Index">Home</a></li>
+            <li><a href="~/Distributor/Invoice">Invoices</a></li>
+            <li><a href="~/Communication/Index">Communication</a></li>
+            <li><a href="~/Home/SignOut">Sign Out</a></li>
+        </ul>
+    </nav>
+</header>
+
+
+<h1>Create</h1>
+
+<h4>Invoice</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="SupplierID" class="control-label"></label>
+                <input asp-for="SupplierID" class="form-control" />
+                <span asp-validation-for="SupplierID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IDate" class="control-label"></label>
+                <input asp-for="IDate" class="form-control" />
+                <span asp-validation-for="IDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Invoice">Back to List</a>
+</div>
+
+
