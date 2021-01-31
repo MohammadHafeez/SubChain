@@ -94,7 +94,7 @@ namespace P2_SubChain.Controllers
                 if (user.Email == email && user.Password == pass)
                 {
                     HttpContext.Session.SetInt32("UserId", user.UserId);
-                    return RedirectToAction("SignIn", user.CompanyType);
+                    return RedirectToAction("Index", "Distributor");
                 }
             }
 
