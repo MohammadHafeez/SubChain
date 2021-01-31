@@ -77,5 +77,29 @@ namespace P2_SubChain.Controllers
             HttpContext.Session.SetInt32("UserId", id);
             return RedirectToAction("Index", "Distributor");
         }
+
+        public IActionResult SignIn()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult SignIn(IFormCollection formdata)
+        {
+            string email = formdata["email"];
+            string pass = formdata["pass"];
+
+            foreach (Users user in userContext.GetAllUser())
+            {
+                if (user.Email == email && user.Password == pass)
+                {
+                    HttpContext.Session.SetInt32("UserId", user.UserId);
+                    return RedirectToAction("SignIn", user.CompanyType);
+                }
+            }
+
+            TempData["auth_error"] = "Email or password is invalid";
+            return View();
+        }
     }
 }

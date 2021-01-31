@@ -26,33 +26,15 @@ namespace P2_SubChain.Controllers
             return View();
         }
 
-        public IActionResult SignIn()
+        public IActionResult About()
         {
             return View();
         }
 
-        [HttpPost]
-        public IActionResult SignIn(IFormCollection formdata)
+        public IActionResult SignOut()
         {
-            string email = formdata["email"];
-            string pass = formdata["pass"];
-
-            foreach (Users user in userContext.GetAllUser())
-            {
-                if (user.Email == email && user.Password == pass)
-                {
-                    HttpContext.Session.SetInt32("UserId", user.UserId);
-                    return RedirectToAction("SignIn", user.CompanyType);
-                }
-            }
-
-            return View();
-        }
-
-
-        public IActionResult Privacy()
-        {
-            return View();
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

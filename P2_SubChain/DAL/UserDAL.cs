@@ -25,8 +25,8 @@ namespace P2_SubChain.DAL
         public int AddUser(Users user)
         {
             SqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = @"INSERT INTO Users (CompanyName, CompanyType, Email, Password, Country, CityOrState, ProductCategory, Rating)
-                              OUTPUT INSERTED.UserId VALUES(@cn, @ct, @e, @p, @c, @cOrs, @pC, @r)";
+            cmd.CommandText = @"INSERT INTO Users (CompanyName, CompanyType, Email, Password, Country, CityOrState, ProductCategory)
+                              OUTPUT INSERTED.UserId VALUES(@cn, @ct, @e, @p, @c, @cOrs, @pC)";
 
             cmd.Parameters.AddWithValue("@cn", user.CompanyName);
             cmd.Parameters.AddWithValue("@ct", user.CompanyType);

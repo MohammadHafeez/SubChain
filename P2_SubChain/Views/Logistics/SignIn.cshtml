@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "Sign In";
+}
+
+<main class="signup">
+    <header>
+        <img src="~/images/logo.svg" alt="" />
+        <div class="burger">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+        </div>
+        <nav class="cust__nav">
+            <ul>
+                <li><a href="~/Home/Index">Home</a></li>
+                <li><a href="~/Home/About">About Us</a></li>
+            </ul>
+        </nav>
+    </header>
+    <form method="post" action="~/Logistics/SignIn">
+        <h1>3rd Party Logistics Sign In</h1>
+        <label>
+            <input name="email" type="text" required autocomplete="off" />
+            <span>Email</span>
+        </label>
+        <label>
+            <input name="pass" type="text" required autocomplete="off" />
+            <span>Password</span>
+        </label>
+        <span style="margin-top: 10px; color: red; display: block;">@TempData["auth_error"]</span>
+        <button class="submit" type="submit">Sign In</button>
+    </form>
+    <p style="margin-top: 20px; color: #435D2B">Dont have an account <a href="~/Supplier/SignUp" style="cursor: pointer; color: #931C2F">Sign Up here</a></p>
+</main>

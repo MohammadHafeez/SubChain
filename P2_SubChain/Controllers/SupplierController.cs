@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace P2_SubChain.Controllers
 {
-    public class LogisticsController : Controller
+    public class SupplierController : Controller
     {
         UserDAL userContext = new UserDAL();
 
@@ -34,6 +34,8 @@ namespace P2_SubChain.Controllers
             string cat2 = formdata["cat2"];
             string cat3 = formdata["cat3"];
             string cat4 = formdata["cat4"];
+            string cat5 = formdata["cat5"];
+            string cat6 = formdata["cat6"];
             string email = formdata["email"];
             string pass = formdata["pass"];
             string pass_confirm = formdata["pass-confirm"];
@@ -76,7 +78,7 @@ namespace P2_SubChain.Controllers
                 }
             }
 
-            List<string> catList = new List<string> { cat1, cat2, cat3, cat4 };
+            List<string> catList = new List<string> { cat1, cat2, cat3, cat4, cat5, cat6 };
             foreach (string cat in catList.ToList())
             {
                 if (cat == null)
@@ -86,7 +88,7 @@ namespace P2_SubChain.Controllers
             }
 
             // signing user up
-            Users user = new Users { CompanyName = companyName, CompanyType = "Logistics", Email = email, Password = pass, Country = country, CityorState = cityOrState, ProductCategory = catList };
+            Users user = new Users { CompanyName = companyName, CompanyType = "Supplier", Email = email, Password = pass, Country = country, CityorState = cityOrState, ProductCategory = catList };
             int id = userContext.AddUser(user);
 
             HttpContext.Session.SetInt32("UserId", id);
