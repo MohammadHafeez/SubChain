@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Sign Up";
+}
+
+<main class="signup">
+    <header>
+        <img src="~/images/logo.svg" alt="" />
+        <div class="burger">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+        </div>
+        <nav class="cust__nav">
+            <ul>
+                <li><a href="~/Home/Index">Home</a></li>
+                <li><a href="~/Home/About">About Us</a></li>
+            </ul>
+        </nav>
+    </header>
+    <form method="post" action="~/Distributor/SignUp">
+        <h1>Distributor Sign Up</h1>
+        <label>
+            <input name="company" type="text" required autocomplete="off" />
+            <span>Company Name</span>
+        </label>
+        <label>
+            <input name="email" type="text" required autocomplete="off" />
+            <span>Email</span>
+        </label>
+        <span style="margin-top: 5px; color: red;">@TempData["email_error"]</span>
+        <div style="display: flex;">
+            <label>
+                <input name="pass" type="text" required autocomplete="off" />
+                <span>Password</span>
+            </label>
+            <label>
+                <input name="pass-confirm" type="text" required autocomplete="off" />
+                <span>Confirm Password</span>
+            </label>
+        </div>
+        <span style="margin-top: 5px; color: red;">@TempData["pass_error"]</span>
+        <button class="submit" type="submit">Sign Up</button>
+    </form>
+    <p style="margin-top: 20px; color: #435D2B">Already have an account <a href="~/Home/SignIn" style="cursor: pointer; color: #931C2F">Sign In here</a></p>
+</main>

@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+
+<header>
+    <img src="~/images/logo.svg" alt="" />
+    <div class="burger">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+    </div>
+    <nav class="cust__nav">
+        <ul>
+            <li><a href="~/Distributor/Index">Home</a></li>
+            <li><a href="~/Invoice/Create">Invoices</a></li>
+            <li><a href="~/Communication/Index">Communication</a></li>
+            <li><a href="~/Home/SignOut">Sign Out</a></li>
+        </ul>
+    </nav>
+</header>
+<section class="consumer_top">
+    <article>
+        <h2>Discover New Suppliers</h2>
+        <form class="search_box" action="~/Distributor/Search" method="post">
+            <label>
+                <select name="select">
+                    <option value="#">Product Type</option>
+                    <option value="fruits&vegetables">Fruits & Vegetables</option>
+                    <option value="meat&seafood">Meat & Seafood</option>
+                    <option value="grain&spices">Grain & Spices</option>
+                    <option value="dairy">Dairy Products</option>
+                    <option value="frozen">Frozen Products</option>
+                    <option value="drinks">Drinks</option>
+                    <option value="sea-freight">Sea Freight</option>
+                    <option value="air-cargo">Air Cargo</option>
+                    <option value="truck-shipping">Truck Shipping</option>
+                    <option value="van-shipping">Van Shipping</option>
+                </select>
+            </label>
+            <input type="text" name="companyName" placeholder="suppliers await ..." />
+            <button type="submit"><img src="~/images/search.svg" /></button>
+        </form>
+    </article>
+    <div class="image_box">
+        <img src="~/images/image4.svg" />
+    </div>
+</section>

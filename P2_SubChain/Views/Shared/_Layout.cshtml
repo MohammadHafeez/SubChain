@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SuBchain | @ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    @RenderBody()
+    <script>
+        const burger = document.querySelector(".burger")
+
+        burger.addEventListener('click', () => {
+            burger.classList.toggle("burger_open")
+            document.querySelector(".cust__nav").classList.toggle("nav_open")
+        })
+    </script>
+</body>
+</html>

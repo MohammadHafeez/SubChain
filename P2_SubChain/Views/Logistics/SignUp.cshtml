@@ -1,0 +1,74 @@
+﻿@{
+    ViewBag.Title = "Sign Up";
+}
+
+<main class="signup">
+    <header>
+        <img src="~/images/logo.svg" alt="" />
+        <div class="burger">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+        </div>
+        <nav class="cust__nav">
+            <ul>
+                <li><a href="~/Home/Index">Home</a></li>
+                <li><a href="~/Home/About">About Us</a></li>
+            </ul>
+        </nav>
+    </header>
+    <form method="post" action="~/Logistics/SignUp">
+        <h1>3rd Party Logistics Sign Up</h1>
+        <label>
+            <input name="company" type="text" required autocomplete="off" />
+            <span>Company Name</span>
+        </label>
+        <div style="display: flex;">
+            <label>
+                <input name="country" type="text" required autocomplete="off" />
+                <span>Country of origin</span>
+            </label>
+            <label>
+                <input name="city" type="text" autocomplete="off" />
+                <span>City / State</span>
+            </label>
+        </div>
+        <p>Types of shipping offered</p>
+        <div style="display: flex;">
+            <article style="margin-right: 100px;">
+                <input type="checkbox" name="cat1" value="sea-freight" />
+                <label for="cat1">Sea Freight</label>
+            </article>
+            <article>
+                <input type="checkbox" name="cat2" value="air-cargo" />
+                <label for="cat2">Air Cargo</label>
+            </article>
+        </div>
+        <div style="display: flex;">
+            <article style="margin-right: 73px;">
+                <input type="checkbox" name="cat3" value="truck-shipping" />
+                <label for="cat3">Truck Shipping</label>
+            </article>
+            <article>
+                <input type="checkbox" name="cat4" value="van-shipping" />
+                <label for="cat4">Van Shipping</label>
+            </article>
+        </div>
+        <label>
+            <input name="email" type="text" required autocomplete="off" />
+            <span>Email</span>
+        </label>
+        <div style="display: flex;">
+            <label>
+                <input name="pass" type="text" required autocomplete="off" />
+                <span>Password</span>
+            </label>
+            <label>
+                <input name="pass-confirm" type="text" required autocomplete="off" />
+                <span>Confirm Password</span>
+            </label>
+        </div>
+        <button class="submit" type="submit">Sign Up</button>
+    </form>
+    <p style="margin-top: 20px; color: #435D2B">Already have an account <a href="~/Logistics/SignIn" style="cursor: pointer; color: #931C2F">Sign In here</a></p>
+</main>
