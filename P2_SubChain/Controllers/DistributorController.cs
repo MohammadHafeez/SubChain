@@ -15,6 +15,7 @@ namespace P2_SubChain.Controllers
     {
         UserDAL userContext = new UserDAL();
         InvoiceDAL invoiceContext = new InvoiceDAL();
+        ProductDAL productContext = new ProductDAL();
 
         public IActionResult Index()
         {
@@ -133,6 +134,27 @@ namespace P2_SubChain.Controllers
                 //to display error message
                 return View(invoice);
             }
+        }
+
+        [HttpPost]
+        public IActionResult Search(IFormCollection formdata)
+        {
+            string companyName = formdata["companyName"];
+            string cat = formdata["select"];
+
+            List<Users> userList = new List<Users>();
+            foreach (Users u in userContext.GetAllUser())
+            {
+                if (u.CompanyType == "Supplier" || u.CompanyType == "Logistics")
+                {
+                    if (u.CompanyName.Contains(companyName) || u.ProductCategory.Contains(cat))
+                    {
+                        userList.Add(u);
+                    }
+                }
+            }
+
+            return View(userList);
         }
 
     }

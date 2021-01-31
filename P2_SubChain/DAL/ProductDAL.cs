@@ -32,8 +32,8 @@ namespace P2_SubChain.DAL
             cmd.Parameters.AddWithValue("@pN", product.ProductName);
             cmd.Parameters.AddWithValue("@pD", product.ProductDesc);
             cmd.Parameters.AddWithValue("@pT", product.ProductType);
-            cmd.Parameters.AddWithValue("@pT", product.ProductPrice);
-            cmd.Parameters.AddWithValue("@pT", product.ImageUrl);
+            cmd.Parameters.AddWithValue("@pP", product.ProductPrice);
+            cmd.Parameters.AddWithValue("@iURL", product.ImageUrl);
 
             conn.Open();
             int id = (int)cmd.ExecuteScalar();

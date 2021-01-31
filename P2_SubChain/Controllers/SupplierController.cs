@@ -129,7 +129,6 @@ namespace P2_SubChain.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Product product)
         {
-            
             product.UserId = Convert.ToInt32(HttpContext.Session.GetInt32("UserId"));
 
             // Find the filename extension of the file to be uploaded.
@@ -137,14 +136,15 @@ namespace P2_SubChain.Controllers
 
             int productId = productContext.GetAllProducts().Count+1;
             string uploadedFile = "Product" + productId + fileExt;
-
             string savePath = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot\\images", uploadedFile);
-
+            string savePath2 = Path.Combine("~\\images", uploadedFile);
             // Upload the file to server
             using (var fileSteam = new FileStream(savePath, FileMode.Create))
             {
                 await product.Image.CopyToAsync(fileSteam);
             }
+            product.ImageUrl = savePath2;
+            productContext.AddProduct(product);
 
             TempData["product_success"] = "Succussfully Created Product";
             return View();
