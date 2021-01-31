@@ -1,0 +1,144 @@
+﻿@model P2_SubChain.Models.Product
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+@*<h1>Create</h1>
+
+<h4>Product</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ProductDesc" class="control-label"></label>
+                <input asp-for="ProductDesc" class="form-control" required />
+                <span asp-validation-for="ProductDesc" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductName" class="control-label"></label>
+                <input asp-for="ProductName" class="form-control" required />
+                <span asp-validation-for="ProductName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductType" class="control-label"></label>
+                <input asp-for="ProductType" class="form-control" required />
+                <span asp-validation-for="ProductType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductPrice" class="control-label"></label>
+                <input asp-for="ProductPrice" class="form-control" required />
+                <span asp-validation-for="ProductPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <label asp-for="Image" class="col-sm-12 col-form-label"></label>
+                <div class="col-sm-12">
+                    <input asp-for="Image" accept="image/jpeg" required />
+                </div>
+                <div class="col-sm-12">
+                    <span>@ViewData["Message"]</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<p style="text-align: center; color: forestgreen; margin-top: 35px;">@TempData["product_success"]</p>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+@{
+    ViewBag.Title = "Create Product";
+}*@
+
+<header>
+    <img src="~/images/logo.svg" alt="" />
+    <div class="burger">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+    </div>
+    <nav class="cust__nav">
+        <ul>
+            <li><a href="~/Supplier/Index">Home</a></li>
+            <li><a href="~/Supplier/Create">New Product</a></li>
+            <li><a href="~/Invoice/Create">Invoice</a></li>
+            <li><a href="~/Communication/Index">Communication</a></li>
+            <li><a href="~/Home/SignOut">Sign Out</a></li>
+        </ul>
+    </nav>
+</header>
+<div class="create__container">
+    <h2>Create a new product</h2>
+    <form method="post" action="~/Supplier/Create" enctype="multipart/form-data">
+        <div class="form__left">
+            <label>
+                <select asp-for="ProductType">
+                    <option value="#">Product Type</option>
+                    <option value="fruits&vegetables">Fruits & Vegetables</option>
+                    <option value="meat&seafood">Meat & Seafood</option>
+                    <option value="grain&spices">Grain & Spices</option>
+                    <option value="dairy">Dairy Products</option>
+                    <option value="frozen">Frozen Products</option>
+                    <option value="drinks">Drinks</option>
+                </select>
+            </label>
+            <p class="text-danger">@TempData["type_error"]</p>
+            <label asp-for="ProductName">
+                <input asp-for="ProductName" type="text" required autocomplete="off" />
+                <span>Product Name</span>
+            </label>
+            <label asp-for="ProductDesc">
+                <input asp-for="ProductDesc" type="text" required autocomplete="off" />
+                <span>Product Description</span>
+            </label>
+            <label asp-for="ProductPrice" >
+                <input asp-for="ProductPrice" type="number" required />
+                <span>Price (SGD)</span>
+            </label>
+        </div>
+        <div class="form__right">
+            <div class="file__input">
+                <div>
+                    <img src="" alt="" id="file-preview" />
+                    <p id="preview-text">No image selected yet</p>
+                </div>
+                <input asp-for="Image" id="default-btn" required />
+                <button type="button" id="custom-btn">
+                    <img src="~/images/upload.svg" alt="" />
+                    <span>Choose a Photo</span>
+                </button>
+            </div>
+            <button class="submit" type="submit">List it!</button>
+        </div>
+    </form>
+</div>
+<p style="text-align: center; color: forestgreen; margin-top: 35px;">@TempData["product_success"]</p>
+<script>
+    // File upload preview
+    const custBtn = document.getElementById("custom-btn")
+    const defaultBtn = document.getElementById("default-btn")
+
+    custBtn.addEventListener('click', () => {
+        defaultBtn.click();
+    })
+
+    defaultBtn.addEventListener('change', (event) => {
+        if (event.target.files.length > 0) {
+            var src = URL.createObjectURL(event.target.files[0]);
+            var preview = document.getElementById("file-preview")
+            preview.src = src
+            preview.style.display = "block";
+            document.getElementById("preview-text").style.display = "none";
+        }
+    })
+</script>
