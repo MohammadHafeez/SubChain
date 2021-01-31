@@ -1,5 +1,111 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewBag.Title = "Home";
 }
+
+<header>
+    <img src="~/images/logo.svg" alt="" />
+    <div class="burger">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+    </div>
+    <nav class="cust__nav">
+        <ul>
+            <li><a href="~/Supplier/Index">Home</a></li>
+            <li><a href="~/Supplier/Create">New Product</a></li>
+            <li><a href="~/Invoice/Create">Invoice</a></li>
+            <li><a href="~/Communication/Index">Communication</a></li>
+            <li><a href="~/Home/SignOut">Sign Out</a></li>
+        </ul>
+    </nav>
+</header>
+<main class="supplier_home">
+    <div class="figure">
+        <div class="line-graph" id="line-graph"></div>
+        <div class="piechart" id="piechart"></div>
+    </div>
+</main>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script>
+    Highcharts.chart('piechart', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: 'Revenue by Product Category'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        accessibility: {
+            point: {
+                valueSuffix: '%'
+            }
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                }
+            }
+        },
+        series: [{
+            minPointSize: 10,
+            innerSize: '40%',
+            zMin: 0,
+            name: 'Brands',
+            data: [{
+                name: 'Meat & Seafood',
+                y: 65
+            }, {
+                name: 'Vege & Fruits',
+                y: 35
+            }]
+        }]
+    });
+
+    Highcharts.chart('line-graph', {
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: 'Monthly Average Temperature'
+        },
+        subtitle: {
+            text: 'Source: WorldClimate.com'
+        },
+        xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        },
+        yAxis: {
+            title: {
+                text: 'Amount (SGD)'
+            }
+        },
+        plotOptions: {
+            line: {
+                dataLabels: {
+                    enabled: true
+                },
+                enableMouseTracking: false
+            }
+        },
+        series: [{
+            name: 'Revenue',
+            data: [11550, 11668, 10565, 11868, 11960, 11722, 11286, 11128, 10416, 11780, 10791, 11171 ]
+        }, {
+            name: 'London',
+            data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+        }]
+    });
+</script>

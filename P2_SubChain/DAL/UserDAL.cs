@@ -61,7 +61,7 @@ namespace P2_SubChain.DAL
             }
 
             conn.Open();
-            int id = (int)cmd.ExecuteNonQuery();
+            int id = (int)cmd.ExecuteScalar();
             conn.Close();
 
             return id;

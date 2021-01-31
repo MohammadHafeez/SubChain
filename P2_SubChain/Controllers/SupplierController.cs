@@ -4,6 +4,7 @@ using P2_SubChain.DAL;
 using P2_SubChain.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace P2_SubChain.Controllers
 {
     public class SupplierController : Controller
     {
+        ProductDAL productContext = new ProductDAL();
         UserDAL userContext = new UserDAL();
 
         public IActionResult Index()
@@ -111,7 +113,7 @@ namespace P2_SubChain.Controllers
                 if (user.Email == email && user.Password == pass)
                 {
                     HttpContext.Session.SetInt32("UserId", user.UserId);
-                    return RedirectToAction("SignIn", "Supplier");
+                    return RedirectToAction("Index", "Supplier");
                 }
             }
 
@@ -119,81 +121,32 @@ namespace P2_SubChain.Controllers
             return View();
         }
 
-        // GET: Supplier/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
-            // Stop accessing the action if not logged in
-            // or account not in the "Staff" role
-            if ((HttpContext.Session.GetString("Role") == null) ||
-            (HttpContext.Session.GetString("Role") != "Staff"))
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            // Prepare the data to be used in Create view
-            AircraftViewModel aircraftVM = new AircraftViewModel();
-            ViewData["StatusList"] = GetStatus();
-            ViewData["AircraftID"] = aircraftContext.SearchIndex() + 1;
-            return View(aircraftVM);
+            return View();
         }
 
-        // POST: Aircraft/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(AircraftViewModel aircraftVM)
+        public async Task<IActionResult> Create(Product product)
         {
-            // Get status list for drop-down list
-            // in case of the need to return to Create view
-            ViewData["StatusList"] = GetStatus();
-            ViewData["AircraftID"] = aircraftContext.SearchIndex() + 1;
-            if (ModelState.IsValid) // used to ensure no validation errors before adding new row in our database
-            {
-                // Checks if MakeModel includes Automaker's name
-                if (aircraftVM.aircraft.MakeModel.All(char.IsDigit) == true)
-                {
-                    ViewData["MakeModelError"] = "Required to include Automaker's name.";
-                    return View(aircraftVM);
-                }
+            
+            product.UserId = Convert.ToInt32(HttpContext.Session.GetInt32("UserId"));
 
-                // Checks if date last maintained is not > today
-                if (aircraftVM.aircraft.DateLastMaintenance.ToString() != DateTime.Today.ToString("dd-MM-yyyy") && aircraftVM.aircraft.DateLastMaintenance > DateTime.Today)
-                {
-                    // Fail
-                    ViewData["DateError"] = "Date last maintenance cannot be beyond today.";
-                    return View(aircraftVM);
-                }
+            // Find the filename extension of the file to be uploaded.
+            string fileExt = Path.GetExtension(product.Image.FileName);
 
-                // Checks if T&C check box is selected
-                if (aircraftVM.aircraftInfo.IsChecked == false)
-                {
-                    ViewData["ErrorMessage"] = "Required check field before Aircraft record can be created.";
-                    return View(aircraftVM);
-                }
-                else
-                {
-                    // Add Aircraft record to database
-                    aircraftContext.Add(aircraftVM.aircraft);
-                }
-                // Redirect user to Aircraft/CreateSuccessful view
-                return RedirectToAction("CreateSuccessful");
-            }
-            else
-            {
-                // Input validation fails, return to the Create view
-                return View(aircraft);
-            }
-        }
+            int productId = productContext.GetAllProducts().Count+1;
+            string uploadedFile = "Product" + productId + fileExt;
 
-        // GET: Aircraft/CreateSuccessful
-        public ActionResult CreateSuccessful(Aircraft aircraftObject)
-        {
-            // Stop accessing the action if not logged in
-            // or account not in the "Staff" role
-            if ((HttpContext.Session.GetString("Role") == null) ||
-            (HttpContext.Session.GetString("Role") != "Staff"))
+            string savePath = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot\\images", uploadedFile);
+
+            // Upload the file to server
+            using (var fileSteam = new FileStream(savePath, FileMode.Create))
             {
-                return RedirectToAction("Index", "Home");
+                await product.Image.CopyToAsync(fileSteam);
             }
-            TempData["AircraftID"] = aircraftContext.SearchIndex();
+
+            TempData["product_success"] = "Succussfully Created Product";
             return View();
         }
     }
