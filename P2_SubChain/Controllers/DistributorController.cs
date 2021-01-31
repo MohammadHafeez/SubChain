@@ -7,12 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace P2_SubChain.Controllers
 {
     public class DistributorController : Controller
     {
         UserDAL userContext = new UserDAL();
+        InvoiceDAL invoiceContext = new InvoiceDAL();
 
         public IActionResult Index()
         {
@@ -101,5 +103,38 @@ namespace P2_SubChain.Controllers
             TempData["auth_error"] = "Email or password is invalid";
             return View();
         }
+
+        public IActionResult Invoice()
+        {
+
+            List<Invoice> invoiceList = invoiceContext.GetAllInvoice();
+            return View(invoiceList);
+        }
+
+
+        public IActionResult CreateInv()
+        {
+            return View();
+        }
+
+        public ActionResult Create(Invoice invoice)
+        {
+
+            if (ModelState.IsValid)
+            {
+                //Add staff record to database
+                invoice.SupplierID = invoiceContext.Add(invoice);
+                //Redirect user to Staff/Index view
+                return RedirectToAction("Invoice");
+            }
+            else
+            {
+                //Input validation fails, return to the Create view
+                //to display error message
+                return View(invoice);
+            }
+        }
+
     }
+    
 }
