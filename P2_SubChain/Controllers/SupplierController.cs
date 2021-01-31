@@ -120,81 +120,81 @@ namespace P2_SubChain.Controllers
         }
 
         // GET: Supplier/Create
-        public ActionResult Create()
-        {
-            // Stop accessing the action if not logged in
-            // or account not in the "Staff" role
-            if ((HttpContext.Session.GetString("Role") == null) ||
-            (HttpContext.Session.GetString("Role") != "Staff"))
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            // Prepare the data to be used in Create view
-            AircraftViewModel aircraftVM = new AircraftViewModel();
-            ViewData["StatusList"] = GetStatus();
-            ViewData["AircraftID"] = aircraftContext.SearchIndex() + 1;
-            return View(aircraftVM);
-        }
+        //public ActionResult Create()
+        //{
+        //    // Stop accessing the action if not logged in
+        //    // or account not in the "Staff" role
+        //    if ((HttpContext.Session.GetString("Role") == null) ||
+        //    (HttpContext.Session.GetString("Role") != "Staff"))
+        //    {
+        //        return RedirectToAction("Index", "Home");
+        //    }
+        //    // Prepare the data to be used in Create view
+        //    AircraftViewModel aircraftVM = new AircraftViewModel();
+        //    ViewData["StatusList"] = GetStatus();
+        //    ViewData["AircraftID"] = aircraftContext.SearchIndex() + 1;
+        //    return View(aircraftVM);
+        //}
 
-        // POST: Aircraft/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(AircraftViewModel aircraftVM)
-        {
-            // Get status list for drop-down list
-            // in case of the need to return to Create view
-            ViewData["StatusList"] = GetStatus();
-            ViewData["AircraftID"] = aircraftContext.SearchIndex() + 1;
-            if (ModelState.IsValid) // used to ensure no validation errors before adding new row in our database
-            {
-                // Checks if MakeModel includes Automaker's name
-                if (aircraftVM.aircraft.MakeModel.All(char.IsDigit) == true)
-                {
-                    ViewData["MakeModelError"] = "Required to include Automaker's name.";
-                    return View(aircraftVM);
-                }
+        //// POST: Aircraft/Create
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Create(AircraftViewModel aircraftVM)
+        //{
+        //    // Get status list for drop-down list
+        //    // in case of the need to return to Create view
+        //    ViewData["StatusList"] = GetStatus();
+        //    ViewData["AircraftID"] = aircraftContext.SearchIndex() + 1;
+        //    if (ModelState.IsValid) // used to ensure no validation errors before adding new row in our database
+        //    {
+        //        // Checks if MakeModel includes Automaker's name
+        //        if (aircraftVM.aircraft.MakeModel.All(char.IsDigit) == true)
+        //        {
+        //            ViewData["MakeModelError"] = "Required to include Automaker's name.";
+        //            return View(aircraftVM);
+        //        }
 
-                // Checks if date last maintained is not > today
-                if (aircraftVM.aircraft.DateLastMaintenance.ToString() != DateTime.Today.ToString("dd-MM-yyyy") && aircraftVM.aircraft.DateLastMaintenance > DateTime.Today)
-                {
-                    // Fail
-                    ViewData["DateError"] = "Date last maintenance cannot be beyond today.";
-                    return View(aircraftVM);
-                }
+        //        // Checks if date last maintained is not > today
+        //        if (aircraftVM.aircraft.DateLastMaintenance.ToString() != DateTime.Today.ToString("dd-MM-yyyy") && aircraftVM.aircraft.DateLastMaintenance > DateTime.Today)
+        //        {
+        //            // Fail
+        //            ViewData["DateError"] = "Date last maintenance cannot be beyond today.";
+        //            return View(aircraftVM);
+        //        }
 
-                // Checks if T&C check box is selected
-                if (aircraftVM.aircraftInfo.IsChecked == false)
-                {
-                    ViewData["ErrorMessage"] = "Required check field before Aircraft record can be created.";
-                    return View(aircraftVM);
-                }
-                else
-                {
-                    // Add Aircraft record to database
-                    aircraftContext.Add(aircraftVM.aircraft);
-                }
-                // Redirect user to Aircraft/CreateSuccessful view
-                return RedirectToAction("CreateSuccessful");
-            }
-            else
-            {
-                // Input validation fails, return to the Create view
-                return View(aircraft);
-            }
-        }
+        //        // Checks if T&C check box is selected
+        //        if (aircraftVM.aircraftInfo.IsChecked == false)
+        //        {
+        //            ViewData["ErrorMessage"] = "Required check field before Aircraft record can be created.";
+        //            return View(aircraftVM);
+        //        }
+        //        else
+        //        {
+        //            // Add Aircraft record to database
+        //            aircraftContext.Add(aircraftVM.aircraft);
+        //        }
+        //        // Redirect user to Aircraft/CreateSuccessful view
+        //        return RedirectToAction("CreateSuccessful");
+        //    }
+        //    else
+        //    {
+        //        // Input validation fails, return to the Create view
+        //        return View(aircraft);
+        //    }
+        //}
 
-        // GET: Aircraft/CreateSuccessful
-        public ActionResult CreateSuccessful(Aircraft aircraftObject)
-        {
-            // Stop accessing the action if not logged in
-            // or account not in the "Staff" role
-            if ((HttpContext.Session.GetString("Role") == null) ||
-            (HttpContext.Session.GetString("Role") != "Staff"))
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            TempData["AircraftID"] = aircraftContext.SearchIndex();
-            return View();
-        }
+        //// GET: Aircraft/CreateSuccessful
+        //public ActionResult CreateSuccessful(Aircraft aircraftObject)
+        //{
+        //    // Stop accessing the action if not logged in
+        //    // or account not in the "Staff" role
+        //    if ((HttpContext.Session.GetString("Role") == null) ||
+        //    (HttpContext.Session.GetString("Role") != "Staff"))
+        //    {
+        //        return RedirectToAction("Index", "Home");
+        //    }
+        //    TempData["AircraftID"] = aircraftContext.SearchIndex();
+        //    return View();
+        //}
     }
 }
