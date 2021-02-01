@@ -77,9 +77,11 @@ namespace P2_SubChain.DAL
         public int Update (Invoice invoice)
         {
             SqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = @"Update invoice set supplierid = @supplierid, date=@date";
+            cmd.CommandText = @"Update invoice set supplierid = @supplierid, date=@date 
+                                    where @selectedid = distributorID" ;
             cmd.Parameters.AddWithValue("@supplierid", invoice.SupplierID);
             cmd.Parameters.AddWithValue("@date", invoice.IDate);
+            cmd.Parameters.AddWithValue("@selectedid", invoice.DistributorID);
             conn.Open();
             int count = cmd.ExecuteNonQuery();
             conn.Close();
