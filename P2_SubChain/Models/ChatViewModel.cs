@@ -14,5 +14,10 @@ namespace P2_SubChain.Models
         public Users User2 { get; set; }
 
         public List<Messages> Messages { get; set; }
+
+        public ChatViewModel()
+        {
+            Messages = new List<Messages>();
+        }
     }
 }

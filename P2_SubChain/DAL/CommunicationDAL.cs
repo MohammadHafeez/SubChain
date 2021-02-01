@@ -64,6 +64,22 @@ namespace P2_SubChain.DAL
             return chatList;
         }
 
+        public void CreateMessage(Messages message)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"INSERT INTO Message (ChatId, SenderId, Message, TimeStamp)
+                              OUTPUT INSERTED.ChatId VALUES(@cId, @sId, @m, @tS)";
+
+            cmd.Parameters.AddWithValue("@cId", message.ChatId);
+            cmd.Parameters.AddWithValue("@sId", message.SenderId);
+            cmd.Parameters.AddWithValue("@m", message.Message);
+            cmd.Parameters.AddWithValue("@ts", message.Timestamp);
+
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+
         public List<Messages> GetAllMessages()
         {
             SqlCommand cmd = conn.CreateCommand();
@@ -72,21 +88,22 @@ namespace P2_SubChain.DAL
             conn.Open();
             SqlDataReader reader = cmd.ExecuteReader();
 
-            List<Messages> chatList = new List<Messages>();
+            List<Messages> messageList = new List<Messages>();
             while (reader.Read())
             {
-                chatList.Add(new Messages
+                messageList.Add(new Messages
                 {
-                    ChatId = reader.GetInt32(0),
-                    SenderId = reader.GetInt32(1),
-                    Message = reader.GetString(2),
-                    Timestamp = reader.GetDateTime(3)
+                    MessageId = reader.GetInt32(0),
+                    ChatId = reader.GetInt32(1),
+                    SenderId = reader.GetInt32(2),
+                    Message = reader.GetString(3),
+                    Timestamp = reader.GetDateTime(4)
                 });
             }
             reader.Close();
             conn.Close();
 
-            return chatList;
+            return messageList;
         }
     }
 }

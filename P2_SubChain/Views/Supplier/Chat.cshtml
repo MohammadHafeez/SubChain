@@ -12,9 +12,10 @@
     </div>
     <nav class="cust__nav">
         <ul>
-            <li><a href="~/Distributor/Index">Home</a></li>
-            <li><a href="~/Invoice/Create">Invoices</a></li>
-            <li><a href="~/Distributor/Communication">Communication</a></li>
+            <li><a href="~/Supplier/Index">Home</a></li>
+            <li><a href="~/Supplier/Create">New Product</a></li>
+            <li><a href="~/Invoice/Create">Invoice</a></li>
+            <li><a href="~/Supplier/Communication">Communication</a></li>
             <li><a href="~/Home/SignOut">Sign Out</a></li>
         </ul>
     </nav>
@@ -62,7 +63,7 @@
                 }
             }
         </div>
-        <form class="input" action="~/Distributor/Chat" method="post">
+        <form class="input" action="~/Supplier/Chat" method="post">
             <input name="message" type="text" />
             <input style="display: none;" name="chatId" type="number" value=@Model.ChatId>
             <input style="display: none;" name="senderId" type="number" value=@Context.Session.GetInt32("UserId")>
