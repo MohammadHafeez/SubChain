@@ -59,8 +59,9 @@ namespace P2_SubChain.DAL
                     UserId = reader.GetInt32(1),
                     ProductName = reader.GetString(2),
                     ProductDesc = reader.GetString(3),
-                    ProductPrice = reader.GetDouble(4),
-                    ImageUrl = reader.GetString(5),
+                    ProductType = reader.GetString(4),
+                    ProductPrice = reader.GetDecimal(5),
+                    ImageUrl = reader.GetString(6),
                 }) ;
             }
             reader.Close();

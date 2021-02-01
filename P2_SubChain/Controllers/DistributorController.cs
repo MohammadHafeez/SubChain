@@ -16,6 +16,7 @@ namespace P2_SubChain.Controllers
         UserDAL userContext = new UserDAL();
         InvoiceDAL invoiceContext = new InvoiceDAL();
         ProductDAL productContext = new ProductDAL();
+        CommunicationDAL communicationContext = new CommunicationDAL();
 
         public IActionResult Index()
         {
@@ -155,6 +156,83 @@ namespace P2_SubChain.Controllers
             }
 
             return View(userList);
+        }
+
+        public IActionResult Communication()
+        {
+            Chat chat = new Chat();
+            int count = 0;
+            // check if chat exists
+            foreach (Chat c in communicationContext.GetAllChats())
+            {
+                
+            }
+        }
+
+        public IActionResult Chat(int id)
+        {
+            ChatViewModel viewModel = new ChatViewModel();
+            int count = 0;
+            // check if chat exists
+            foreach (Chat c in communicationContext.GetAllChats())
+            {
+                if (c.UserId1 == HttpContext.Session.GetInt32("UserId") && c.UserId2 == id)
+                {
+                    count += 1;
+                }
+                else if (c.UserId1 == HttpContext.Session.GetInt32("UserId") && c.UserId1 == id)
+                {
+                    count += 1;
+                }
+
+                if (count > 0)
+                {
+                    foreach (Users u in userContext.GetAllUser())
+                    {
+                        if (c.UserId1 == u.UserId)
+                        {
+                            viewModel.User1 = u;
+                        }
+
+                        if (c.UserId2 == u.UserId)
+                        {
+                            viewModel.User2 = u;
+                        }
+                    }
+
+                    foreach (Messages m in communicationContext.GetAllMessages())
+                    {
+                        if (m.ChatId == c.ChatId)
+                        {
+                            viewModel.Messages.Add(m);
+                        }
+                    }
+
+                    return View(viewModel);
+                }
+            }
+
+
+            // create a new chat
+            int userId1 = Convert.ToInt32(HttpContext.Session.GetInt32("UserId"));
+            Chat chat = communicationContext.CreateChat(new Chat { UserId1 = userId1, UserId2 = id });
+
+            foreach (Users u in userContext.GetAllUser())
+            {
+                if (userId1 == u.UserId)
+                {
+                    viewModel.User1 = u;
+                }
+
+                if (id == u.UserId)
+                {
+                    viewModel.User2 = u;
+                }
+            }
+
+            viewModel.ChatId = chat.ChatId;
+            viewModel.Messages = null;
+            return View(viewModel);
         }
 
     }

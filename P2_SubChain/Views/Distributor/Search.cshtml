@@ -15,7 +15,7 @@
         <ul>
             <li><a href="~/Distributor/Index">Home</a></li>
             <li><a href="~/Invoice/Create">Invoices</a></li>
-            <li><a href="~/Communication/Index">Communication</a></li>
+            <li><a href="~/Distributor/Communication">Communication</a></li>
             <li><a href="~/Home/SignOut">Sign Out</a></li>
         </ul>
     </nav>
@@ -48,11 +48,11 @@
                             @{
                                 if (s.CompanyType == "Logistics")
                                 {
-                                    <a @*asp-controller="Logistics" asp-action="Communicate" asp-route-id="@s.UserId"*@>Contact 3PL</a>
+                                    <a asp-controller="Logistics" asp-action="Communicate" asp-route-id="@s.UserId">Contact 3PL</a>
                                 }
                                 else
                                 {
-                                    <a @*asp-controller="Supplier" asp-action="Products" asp-route-id="@s.UserId"*@>View Products</a>
+                                    <a asp-controller="Supplier" asp-action="Products" asp-route-id="@s.UserId">View Products</a>
                                 }
                             }
                         </div>

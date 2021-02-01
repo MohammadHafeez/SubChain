@@ -94,7 +94,7 @@ namespace P2_SubChain.Controllers
             int id = userContext.AddUser(user);
 
             HttpContext.Session.SetInt32("UserId", id);
-            return RedirectToAction("Index", "Logistics");
+            return RedirectToAction("Index", "Supplier");
         }
 
         public IActionResult SignIn()
@@ -137,17 +137,29 @@ namespace P2_SubChain.Controllers
             int productId = productContext.GetAllProducts().Count+1;
             string uploadedFile = "Product" + productId + fileExt;
             string savePath = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot\\images", uploadedFile);
-            string savePath2 = Path.Combine("~\\images", uploadedFile);
             // Upload the file to server
             using (var fileSteam = new FileStream(savePath, FileMode.Create))
             {
                 await product.Image.CopyToAsync(fileSteam);
             }
-            product.ImageUrl = savePath2;
+            product.ImageUrl = uploadedFile;
             productContext.AddProduct(product);
 
             TempData["product_success"] = "Succussfully Created Product";
             return View();
+        }
+
+        public IActionResult Products(int? id)
+        {
+            List<Product> productList = new List<Product>();
+            foreach (Product p in productContext.GetAllProducts())
+            {
+                if (p.UserId == id)
+                {
+                    productList.Add(p);
+                }
+            }
+            return View(productList);
         }
     }
 }

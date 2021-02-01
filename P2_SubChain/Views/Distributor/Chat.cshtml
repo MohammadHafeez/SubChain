@@ -1,0 +1,72 @@
+﻿@model P2_SubChain.Models.ChatViewModel
+@{
+    ViewBag.Title = "Messages";
+}
+
+<header>
+    <img src="~/images/logo.svg" alt="" />
+    <div class="burger">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+    </div>
+    <nav class="cust__nav">
+        <ul>
+            <li><a href="~/Distributor/Index">Home</a></li>
+            <li><a href="~/Invoice/Create">Invoices</a></li>
+            <li><a href="~/Distributor/Communication">Communication</a></li>
+            <li><a href="~/Home/SignOut">Sign Out</a></li>
+        </ul>
+    </nav>
+</header>
+<main class="messages">
+    <section>
+        <div class="top">
+            <div class="image_box">
+                <img src="~/images/user.svg" />
+            </div>
+            <article>
+                @{
+                    if (Model.User1.UserId == Context.Session.GetInt32("UserId"))
+                    {
+                        <p>@Model.User2.CompanyName</p>
+                        <p>@Model.User2.CompanyType</p>
+                    }
+                    else
+                    {
+                        <p>@Model.User1.CompanyName</p>
+                        <p>@Model.User1.CompanyType</p>
+                    }
+                }
+            </article>
+        </div>
+        <div class="message_box">
+            @if (Model.Messages != null)
+            {
+                @foreach (Messages m in Model.Messages)
+                {
+                    if (m.SenderId == Context.Session.GetInt32("UserId"))
+                    {
+                        <article class="green">
+                            <p>@m.Message</p>
+                            <span>@m.Timestamp.ToString("{0:hh:mm:ss tt}")</span>
+                        </article>
+                    }
+                    else
+                    {
+                        <article class="gray">
+                            <p>@m.Message</p>
+                            <span>@m.Timestamp.ToString("{0:hh:mm:ss tt}")</span>
+                        </article>
+                    }
+                }
+            }
+        </div>
+        <form class="input" action="~/Communication/Messages" method="post">
+            <input name="message" type="text" />
+            <input style="display: none;" name="chatId" type="number" value=@Model.ChatId>
+            <input style="display: none;" name="senderId" type="number" value=@Context.Session.GetInt32("UserId")>
+            <button type="submit">Send</button>
+        </form>
+    </section>
+</main>

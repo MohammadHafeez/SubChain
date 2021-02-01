@@ -12,10 +12,9 @@
     </div>
     <nav class="cust__nav">
         <ul>
-            <li><a href="~/Supplier/Index">Home</a></li>
-            <li><a href="~/Supplier/Create">New Product</a></li>
-            <li><a href="~/Invoice/Create">Invoice</a></li>
-            <li><a href="~/Communication/Index">Communication</a></li>
+            <li><a href="~/Distributor/Index">Home</a></li>
+            <li><a href="~/Distributor/Invoice">Invoices</a></li>
+            <li><a href="~/Distributor/Communication">Communication</a></li>
             <li><a href="~/Home/SignOut">Sign Out</a></li>
         </ul>
     </nav>
@@ -34,14 +33,14 @@
                 {
                     <article>
                         <div class="image_box">
-                            <img src="@p.ImageUrl" />
+                            <img src="~/images/@p.ImageUrl" />
                         </div>
                         <article>
                             <p>@p.ProductName</p>
                             <p>@p.ProductDesc</p>
                             <p>$@p.ProductPrice</p>
                         </article>
-                        <a asp-controller="Communication" asp-action="Messages" asp-route-id="@p.UserId">Inquire</a>
+                        <a asp-controller="Distributor" asp-action="Chat" asp-route-id="@p.UserId">Inquire</a>
                     </article>
                 }
             </section>
