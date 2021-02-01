@@ -135,6 +135,23 @@ namespace P2_SubChain.Controllers
                 return View(invoice);
             }
         }
+        public ActionResult Edit(Invoice invoice)
+        {
+
+            if (ModelState.IsValid)
+            {
+                //Add staff record to database
+                invoice.DistributorID = invoiceContext.Update(invoice);
+                //Redirect user to Staff/Index view
+                return RedirectToAction("Invoice");
+            }
+            else
+            {
+                //Input validation fails, return to the Create view
+                //to display error message
+                return View(invoice);
+            }
+        }
 
         [HttpPost]
         public IActionResult Search(IFormCollection formdata)
