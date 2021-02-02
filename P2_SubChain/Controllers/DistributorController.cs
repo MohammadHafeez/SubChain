@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.IO;
 
 namespace P2_SubChain.Controllers
 {
@@ -119,40 +120,43 @@ namespace P2_SubChain.Controllers
             return View();
         }
 
-        public ActionResult Create(Invoice invoice)
+        public async Task<ActionResult> CreateInv(Invoice invoice)
         {
+            invoice.ChainId = 1;
 
-            if (ModelState.IsValid)
-            {
-                //Add staff record to database
-                invoice.SupplierID = invoiceContext.Add(invoice);
-                //Redirect user to Staff/Index view
-                return RedirectToAction("Invoice");
-            }
-            else
-            {
-                //Input validation fails, return to the Create view
-                //to display error message
-                return View(invoice);
-            }
-        }
-        public ActionResult Edit(Invoice invoice)
-        {
+            // Find the filename extension of the file to be uploaded.
+            string fileExt = Path.GetExtension(invoice.File.FileName);
 
-            if (ModelState.IsValid)
+            int productId = productContext.GetAllProducts().Count + 1;
+            string uploadedFile = "Product" + productId + fileExt;
+            string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", uploadedFile);
+            // Upload the file to server
+            using (var fileSteam = new FileStream(savePath, FileMode.Create))
             {
-                //Add staff record to database
-                invoice.DistributorID = invoiceContext.Update(invoice);
-                //Redirect user to Staff/Index view
-                return RedirectToAction("Invoice");
+                await invoice.File.CopyToAsync(fileSteam);
             }
-            else
-            {
-                //Input validation fails, return to the Create view
-                //to display error message
-                return View(invoice);
-            }
+            invoice.Filename = uploadedFile;
+            invoiceContext.AddInvoice(invoice);
+
+
         }
+        //public ActionResult Edit(Invoice invoice)
+        //{
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        //Add staff record to database
+        //        invoice.DistributorID = invoiceContext.Update(invoice);
+        //        //Redirect user to Staff/Index view
+        //        return RedirectToAction("Invoice");
+        //    }
+        //    else
+        //    {
+        //        //Input validation fails, return to the Create view
+        //        //to display error message
+        //        return View(invoice);
+        //    }
+        //}
 
         [HttpPost]
         public IActionResult Search(IFormCollection formdata)

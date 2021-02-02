@@ -1,10 +1,11 @@
 ﻿@model P2_SubChain.Models.Invoice
-
+@*@{
+        ViewData["Title"] = "Create";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }*@
 @{
-    ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Create Invoice";
 }
-
 
 
 <header>
@@ -23,35 +24,43 @@
         </ul>
     </nav>
 </header>
-
-
-<h1>Create</h1>
-
-<h4>Invoice</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="SupplierID" class="control-label"></label>
-                <input asp-for="SupplierID" class="form-control" />
-                <span asp-validation-for="SupplierID" class="text-danger"></span>
+<div class="create__container">
+    <h2>Create a new Invoice</h2>
+    <form method="post" action="~/Distributor/CreateInv" enctype="multipart/form-data">
+        <div class="form__right">
+            <div class="file__input">
+                <div>
+                    <img src="" alt="" id="file-preview" />
+                    <p id="preview-text">No image selected yet</p>
+                </div>
+                <input asp-for="File" id="default-btn" required />
+                <button type="button" id="custom-btn">
+                    <img src="~/images/upload.svg" alt="" />
+                    <span>Choose a Photo</span>
+                </button>
             </div>
-            <div class="form-group">
-                <label asp-for="IDate" class="control-label"></label>
-                <input asp-for="IDate" class="form-control" />
-                <span asp-validation-for="IDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+            <input style="display: none;" asp-for="SenderId" value="@Context.Session.GetInt32("UserId")" />
+            <button class="submit" type="submit">List it!</button>
+        </div>
+    </form>
 </div>
+<p style="text-align: center; color: forestgreen; margin-top: 35px;">@TempData["invoice_success"]</p>
+<script>
+    // File upload preview
+    const custBtn = document.getElementById("custom-btn")
+    const defaultBtn = document.getElementById("default-btn")
 
-<div>
-    <a asp-action="Invoice">Back to List</a>
-</div>
+    custBtn.addEventListener('click', () => {
+        defaultBtn.click();
+    })
 
-
+    defaultBtn.addEventListener('change', (event) => {
+        if (event.target.files.length > 0) {
+            var src = URL.createObjectURL(event.target.files[0]);
+            var preview = document.getElementById("file-preview")
+            preview.src = src
+            preview.style.display = "block";
+            document.getElementById("preview-text").style.display = "none";
+        }
+    })
+</script>

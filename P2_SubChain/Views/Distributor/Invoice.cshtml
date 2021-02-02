@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<P2_SubChain.Models.Invoice>
+@{
     ViewBag.Title = "Home";
 }
 
@@ -19,42 +20,50 @@
         </ul>
     </nav>
 </header>
-
-
-
-<section>
-    <style>
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
+<main class="invoice">
+    @{
+        if (Model.Count() == 0)
+        {
+        <article>
+            <h2>No Invoices in this chain</h2>
+            <a>Create</a>
+        </article>
         }
-
-            table.center {
-                margin-left: auto;
-                margin-right: auto;
-            }
-    </style>
-    <div class="table-responsive">
-        <table id="viewStaff" class="table table-striped table-bordered">
-            <thead class="thead-dark">
+        else
+        {
+            <article>
+                <h2>Invoices</h2>
+                <a>Create</a>
+            </article>
+            <table>
                 <tr>
-                    <th>Supplier ID</th>
-                    <th>Date </th>
-
-
+                    <th>Invoice Id</th>
+                    <th>Sender Id</th>
+                    <th>File Name</th>
+                    <th>Upload Date</th>
+                    <th>Edit Date</th>
+                    <th></th>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.SupplierID.ToString()</td>
-                        <td>@item.IDate</td>
-
-                    </tr>
+                @{
+                    foreach (Invoice i in Model)
+                    {
+                        <tr>
+                            <td>@i.InvoiceId</td>
+                            <td>@i.SenderId</td>
+                            <td>@i.Filename</td>
+                            <td>@i.UploadDate</td>
+                            <td>@i.EditDate</td>
+                            <td>
+                                <a>
+                                    View
+                                    <img src="~/images/arrow-right.svg" />
+                                </a>
+                            </td>
+                        </tr>
+                    }
                 }
-            </tbody>
-        </table>
-    </div>
-</section>
+            </table>
+        }
+    }
+</main>
 
