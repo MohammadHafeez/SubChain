@@ -120,16 +120,18 @@ namespace P2_SubChain.Controllers
             return View();
         }
 
+        [HttpPost]
         public async Task<ActionResult> CreateInv(Invoice invoice)
         {
             invoice.ChainId = 1;
+            invoice.UploadDate = DateTime.Now;
 
             // Find the filename extension of the file to be uploaded.
             string fileExt = Path.GetExtension(invoice.File.FileName);
 
-            int productId = productContext.GetAllProducts().Count + 1;
-            string uploadedFile = "Product" + productId + fileExt;
-            string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", uploadedFile);
+            int invoiceId = invoiceContext.GetAllInvoice().Count + 1;
+            string uploadedFile = "Ivoice" + invoiceId + fileExt;
+            string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\invoice", uploadedFile);
             // Upload the file to server
             using (var fileSteam = new FileStream(savePath, FileMode.Create))
             {
@@ -138,8 +140,10 @@ namespace P2_SubChain.Controllers
             invoice.Filename = uploadedFile;
             invoiceContext.AddInvoice(invoice);
 
-
+            List<Invoice> invoiceList = invoiceContext.GetAllInvoice();
+            return RedirectToAction("Invoice", invoiceList);
         }
+
         //public ActionResult Edit(Invoice invoice)
         //{
 

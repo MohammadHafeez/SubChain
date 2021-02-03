@@ -1170,6 +1170,13 @@ form button {
             .supplier_home .figure .piechart {
                 flex: 0.4;
             }
+
+    /* ----------------------------------- */
+    /* Distributor/ Page */
+    /* ----------------------------------- */
+    .invoice {
+        padding: 120px clamp(70px, 8vw, 150px) 0 clamp(70px, 8vw, 150px);
+    }
 }
 
 @media screen and (min-width: 1200px) {

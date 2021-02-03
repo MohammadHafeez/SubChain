@@ -36,16 +36,21 @@ namespace P2_SubChain.DAL
             List<Invoice> invoiceList = new List<Invoice>();
             while (reader.Read())
             {
-                invoiceList.Add(
-                 new Invoice
-                 {
-                     InvoiceId = reader.GetInt32(0),
-                     ChainId = reader.GetInt32(1),
-                     SenderId = reader.GetInt32(2),
-                     Filename = reader.GetString(3),
-                     UploadDate = reader.GetDateTime(4),
-                     EditDate = !reader.IsDBNull(5) ? reader.GetDateTime(5) : null
-                 });
+                Invoice invoice = new Invoice();
+                invoice.InvoiceId = reader.GetInt32(0);
+                invoice.ChainId = reader.GetInt32(1);
+                invoice.SenderId = reader.GetInt32(2);
+                invoice.Filename = reader.GetString(3);
+                invoice.UploadDate = reader.GetDateTime(4);
+                if (reader.IsDBNull(5))
+                {
+                    invoice.EditDate = null;
+                }
+                else
+                {
+                    invoice.EditDate = reader.GetDateTime(5);
+                }
+                invoiceList.Add(invoice);
             }
             reader.Close();
             conn.Close();
@@ -59,7 +64,7 @@ namespace P2_SubChain.DAL
             SqlCommand cmd = conn.CreateCommand();
 
             cmd.CommandText = @"INSERT INTO Invoice (ChainId, SenderId, Filename, UploadDate)
-            OUTPUT INSERTED.ChainOd VALUES(@cId, @sId, @fN, @uD)";
+            OUTPUT INSERTED.ChainId VALUES(@cId, @sId, @fN, @uD)";
 
             cmd.Parameters.AddWithValue("@cId", invoice.ChainId);
             cmd.Parameters.AddWithValue("@sId", invoice.SenderId);
