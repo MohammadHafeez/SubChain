@@ -16,10 +16,64 @@ namespace P2_SubChain.Controllers
         ProductDAL productContext = new ProductDAL();
         UserDAL userContext = new UserDAL();
         CommunicationDAL communicationContext = new CommunicationDAL();
+        ChainDAL chainContext = new ChainDAL();
+        InvoiceDAL invoiceContext = new InvoiceDAL();
 
         public IActionResult Index()
         {
-            return View();
+            List<Users> userList = new List<Users>();
+            List<int> userIds = new List<int>();
+            string userIdString = null;
+            foreach (Chain c in chainContext.GetAllChains())
+            {
+                if (c.Status == "Efficient")
+                {
+                    userIdString = c.EfficientChain;
+                    userIds = userIdString.Split(",").Select(Int32.Parse).ToList();
+                    if (userIds.Contains(Convert.ToInt32(HttpContext.Session.GetInt32("UserId"))))
+                    {
+                        foreach (Users user in userContext.GetAllUser())
+                        {
+                            foreach (int userId in userIds)
+                            {
+                                if (user.UserId == userId)
+                                {
+                                    userList.Add(user);
+                                }
+                            }
+                        }
+                        TempData["ChainStatus"] = "Efficient Supply Chain";
+                        HttpContext.Session.SetString("ChainStatus", "Efficient");
+                        HttpContext.Session.SetInt32("ChainId", c.ChainId);
+                        return View(userList);
+                    }
+                }
+                else if (c.Status == "Responsive")
+                {
+                    userIdString = c.ResponsiveChain;
+                    userIds = userIdString.Split(",").Select(Int32.Parse).ToList();
+                    if (userIds.Contains(Convert.ToInt32(HttpContext.Session.GetInt32("UserId"))))
+                    {
+                        foreach (Users user in userContext.GetAllUser())
+                        {
+                            foreach (int userId in userIds)
+                            {
+                                if (user.UserId == userId)
+                                {
+                                    userList.Add(user);
+                                }
+                            }
+                        }
+                        TempData["ChainStatus"] = "Responsive Supply Chain";
+                        HttpContext.Session.SetString("ChainStatus", "Responsive");
+                        HttpContext.Session.SetInt32("ChainId", c.ChainId);
+                        return View(userList);
+                    }
+                }
+            }
+
+            TempData["ChainStatus"] = "Not Part of a supply chain";
+            return View(userList);
         }
 
         public IActionResult SignUp()
@@ -301,6 +355,153 @@ namespace P2_SubChain.Controllers
 
             viewModel.ChatId = chatId;
             return View(viewModel);
+        }
+
+        public IActionResult Invoice()
+        {
+            List<Invoice> invoiceList = new List<Invoice>();
+            foreach (Invoice i in invoiceContext.GetAllInvoice())
+            {
+                if (i.ChainId == HttpContext.Session.GetInt32("ChainId") && i.ChainStatus == HttpContext.Session.GetString("ChainStatus"))
+                {
+                    invoiceList.Add(i);
+                }
+            }
+            return View(invoiceList);
+        }
+
+
+        public IActionResult CreateInv()
+        {
+            string userIdString = null;
+
+            foreach (Chain c in chainContext.GetAllChains())
+            {
+                if (c.ChainId == HttpContext.Session.GetInt32("ChainId"))
+                {
+                    if (HttpContext.Session.GetString("ChainStatus") == "Efficient")
+                    {
+                        userIdString = c.EfficientChain;
+                    }
+                    else if (HttpContext.Session.GetString("ChainStatus") == "Responsive")
+                    {
+                        userIdString = c.ResponsiveChain;
+                    }
+                }
+            }
+
+            if (userIdString == null)
+            {
+                TempData["NoChain"] = "You are not part of a chain";
+                return RedirectToAction("Invoice", "Supplier");
+            }
+
+            List<Users> userList = new List<Users>();
+            List<int> userIds = userIdString.Split(",").Select(Int32.Parse).ToList();
+            foreach (Users u in userContext.GetAllUser())
+            {
+                foreach (int userId in userIds)
+                {
+                    if (userId == u.UserId && userId != HttpContext.Session.GetInt32("UserId"))
+                    {
+                        userList.Add(u);
+                    }
+                }
+            }
+            return View(userList);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CreateInv(int receiverId, IFormFile file)
+        {
+            Invoice invoice = new Invoice
+            {
+                ChainId = Convert.ToInt32(HttpContext.Session.GetInt32("ChainId")),
+                SenderId = Convert.ToInt32(HttpContext.Session.GetInt32("UserId")),
+                ChainStatus = HttpContext.Session.GetString("ChainStatus"),
+                ReceiverId = receiverId,
+                UploadDate = DateTime.Now
+            };
+
+            // Find the filename extension of the file to be uploaded.
+            string fileExt = Path.GetExtension(file.FileName);
+
+            List<Invoice> invoiceList = invoiceContext.GetAllInvoice();
+            foreach (Invoice i in invoiceContext.GetAllInvoice())
+            {
+                if (i.ChainId == HttpContext.Session.GetInt32("ChainId") && i.ChainStatus == HttpContext.Session.GetString("ChainStatus"))
+                {
+                    invoiceList.Add(i);
+                }
+            }
+
+            string uploadedFile = "Invoice" + invoiceList.Count + 1 + fileExt;
+            string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\invoice", uploadedFile);
+            // Upload the file to server
+            using (var fileSteam = new FileStream(savePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileSteam);
+            }
+            invoice.Filename = uploadedFile;
+            invoiceContext.AddInvoice(invoice);
+
+            return RedirectToAction("Invoice");
+        }
+
+        public IActionResult ViewInv(int id)
+        {
+            Invoice invoice = new Invoice();
+            foreach (Invoice i in invoiceContext.GetAllInvoice())
+            {
+                if (i.InvoiceId == id)
+                {
+                    invoice = i;
+                }
+            }
+            return View(invoice);
+        }
+
+        public ActionResult EditInv(int id)
+        {
+            Invoice invoice = new Invoice();
+            foreach (Invoice i in invoiceContext.GetAllInvoice())
+            {
+                if (i.InvoiceId == id)
+                {
+                    invoice = i;
+                }
+            }
+
+            return View(invoice);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditInv(int id, IFormFile file)
+        {
+            Invoice invoice = new Invoice();
+            foreach (Invoice i in invoiceContext.GetAllInvoice())
+            {
+                if (i.InvoiceId == id)
+                {
+                    invoice = i;
+                    invoiceContext.UpdateInvoice(invoice.InvoiceId);
+                }
+            }
+
+            // Find the filename extension of the file to be uploaded.
+            string fileExt = Path.GetExtension(file.FileName);
+
+            string uploadedFile = "Updated_Invoice" + invoice.InvoiceId + fileExt;
+            string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\invoice", uploadedFile);
+            // Upload the file to server
+            using (var fileSteam = new FileStream(savePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileSteam);
+            }
+            invoice.Filename = uploadedFile;
+            invoiceContext.AddInvoice(invoice);
+
+            return RedirectToAction("Invoice");
         }
     }
 }

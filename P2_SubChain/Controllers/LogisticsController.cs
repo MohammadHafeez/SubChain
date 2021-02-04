@@ -13,10 +13,63 @@ namespace P2_SubChain.Controllers
     public class LogisticsController : Controller
     {
         UserDAL userContext = new UserDAL();
+        ChainDAL chainContext = new ChainDAL();
 
         public IActionResult Index()
         {
-            return View();
+            List<Users> userList = new List<Users>();
+            List<int> userIds = new List<int>();
+            string userIdString = null;
+            foreach (Chain c in chainContext.GetAllChains())
+            {
+                if (c.Status == "Efficient")
+                {
+                    userIdString = c.EfficientChain;
+                    userIds = userIdString.Split(",").Select(Int32.Parse).ToList();
+                    if (userIds.Contains(Convert.ToInt32(HttpContext.Session.GetInt32("UserId"))))
+                    {
+                        foreach (Users user in userContext.GetAllUser())
+                        {
+                            foreach (int userId in userIds)
+                            {
+                                if (user.UserId == userId)
+                                {
+                                    userList.Add(user);
+                                }
+                            }
+                        }
+                        TempData["ChainStatus"] = "Efficient Supply Chain";
+                        HttpContext.Session.SetString("ChainStatus", "Efficient");
+                        HttpContext.Session.SetInt32("ChainId", c.ChainId);
+                        return View(userList);
+                    }
+                }
+                else if (c.Status == "Responsive")
+                {
+                    userIdString = c.ResponsiveChain;
+                    userIds = userIdString.Split(",").Select(Int32.Parse).ToList();
+                    if (userIds.Contains(Convert.ToInt32(HttpContext.Session.GetInt32("UserId"))))
+                    {
+                        foreach (Users user in userContext.GetAllUser())
+                        {
+                            foreach (int userId in userIds)
+                            {
+                                if (user.UserId == userId)
+                                {
+                                    userList.Add(user);
+                                }
+                            }
+                        }
+                        TempData["ChainStatus"] = "Responsive Supply Chain";
+                        HttpContext.Session.SetString("ChainStatus", "Responsive");
+                        HttpContext.Session.SetInt32("ChainId", c.ChainId);
+                        return View(userList);
+                    }
+                }
+            }
+
+            TempData["ChainStatus"] = "Not Part of a supply chain";
+            return View(userList);
         }
 
         public IActionResult SignUp()

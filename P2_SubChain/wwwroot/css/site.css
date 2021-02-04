@@ -630,6 +630,58 @@ form button {
 /* ----------------------------------- */
 /* Communicate/Index Page */
 /* ----------------------------------- */
+.supplier_home .figure{
+    display: flex;
+}
+
+.supplier_home .figure .line-graph {
+    flex: 0.6;
+}
+
+.supplier_home .figure .piechart {
+    flex: 0.4;
+}
+
+.supplier_home .supplier_btm{
+    margin-top: 50px;
+}
+
+.supplier_home .supplier_btm h2 {
+    font-size: 24px;
+    text-align: left;
+    font-family: vaR(--roboto);
+    color: var(--dark-red);
+}
+
+.supplier_home .supplier_btm div {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 30px;
+}
+
+.supplier_home .supplier_btm div article {
+    background-color: var(--light-green);
+    color: var(--dark-blue);
+    padding: 15px 25px;
+}
+
+.supplier_home .supplier_btm div article:not(:last-child) {
+    margin-right: 25px;
+}
+
+.supplier_home .supplier_btm div article p:first-child {
+    font-size: 21px;
+    color: var(--dark-red);
+}
+
+.supplier_home .supplier_btm div p:last-child {
+    color: var(--yellow);
+}
+
+/* ----------------------------------- */
+/* Communicate/Index Page */
+/* ----------------------------------- */
 
 .communicate h2 {
     font-size: clamp(28px, 2.8vw, 36px);

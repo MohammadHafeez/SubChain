@@ -1,0 +1,64 @@
+﻿@model P2_SubChain.Models.Invoice
+@{
+    ViewBag.Title = "Messages";
+}
+
+<header>
+    <img src="~/images/logo.svg" alt="" />
+    <div class="burger">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+    </div>
+    <nav class="cust__nav">
+        <ul>
+            <li><a href="~/Supplier/Index">Home</a></li>
+            <li><a href="~/Supplier/Create">New Product</a></li>
+            <li><a href="~/Supplier/Invoice">Invoice</a></li>
+            <li><a href="~/Supplier/Communication">Communication</a></li>
+            <li><a href="~/Home/SignOut">Sign Out</a></li>
+        </ul>
+    </nav>
+</header>
+<main class="editInvoice">
+    <article>
+        <h2>Edit Invoice no. @Model.InvoiceId</h2>
+        <embed src="~/invoice/@Model.Filename" class="inv" />
+    </article>
+    <form method="post" action="~/Supplier/EditInv" enctype="multipart/form-data">
+        <div class="file__input">
+            <div>
+                <img src="" alt="" id="file-preview" />
+                <p id="preview-text">No File has been selected</p>
+            </div>
+            <input name="file" type="file" id="default-btn" required />
+            <input name="id" type="number" style="display: none;" value="@Model.InvoiceId" />
+            <button type="button" id="custom-btn">
+                <img src="~/images/upload.svg" alt="" />
+                <span>Choose a File</span>
+            </button>
+        </div>
+        <input style="display: none;" asp-for="SenderId" value="@Context.Session.GetInt32("UserId")" />
+        <button class="submit" type="submit">Update</button>
+        <p style="text-align: center; color: forestgreen; margin-top: 35px;">@TempData["invoice_success"]</p>
+    </form>
+</main>
+<script>
+    // File upload preview
+    const custBtn = document.getElementById("custom-btn")
+    const defaultBtn = document.getElementById("default-btn")
+
+    custBtn.addEventListener('click', () => {
+        defaultBtn.click();
+    })
+
+    defaultBtn.addEventListener('change', (event) => {
+        if (event.target.files.length > 0) {
+            var src = URL.createObjectURL(event.target.files[0]);
+            var preview = document.getElementById("file-preview")
+            preview.src = src
+            preview.style.display = "block";
+            document.getElementById("preview-text").style.display = "none";
+        }
+    })
+</script>

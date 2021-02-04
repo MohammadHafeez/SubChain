@@ -1,0 +1,83 @@
+﻿@model IEnumerable<P2_SubChain.Models.Invoice>
+@{
+    ViewBag.Title = "Home";
+}
+
+<header>
+    <img src="~/images/logo.svg" alt="" />
+    <div class="burger">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+    </div>
+    <nav class="cust__nav">
+        <ul>
+            <li><a href="~/Supplier/Index">Home</a></li>
+            <li><a href="~/Supplier/Create">New Product</a></li>
+            <li><a href="~/Supplier/Invoice">Invoice</a></li>
+            <li><a href="~/Supplier/Communication">Communication</a></li>
+            <li><a href="~/Home/SignOut">Sign Out</a></li>
+        </ul>
+    </nav>
+</header>
+<main class="invoice">
+    @{
+        if (Model.Count() == 0)
+        {
+            <article>
+                <h2>No Invoices in this chain</h2>
+                <span style="color: red; font-size: 20px;">@TempData["NoChain"]</span>
+                <a href="~/Distributor/CreateInv">Create</a>
+            </article>
+        }
+        else
+        {
+            <article>
+                <h2>Invoices</h2>
+                <span style="color: red; font-size: 20px;">@TempData["NoChain"]</span>
+                <a href="~/Distributor/CreateInv">Create</a>
+            </article>
+            <table>
+                <tr>
+                    <th>Invoice Id</th>
+                    <th>Sender Id</th>
+                    <th>File Name</th>
+                    <th>Upload Date</th>
+                    <th>Invoice Status</th>
+                    <th></th>
+                </tr>
+                @{
+                    foreach (Invoice i in Model)
+                    {
+                        <tr>
+                            <td>@i.InvoiceId</td>
+                            <td>@i.SenderId</td>
+                            <td>@i.Filename</td>
+                            <td>@i.UploadDate</td>
+                            @{
+                                if (i.Status == "Current")
+                                {
+                                    <td style="color: #43a047">@i.Status</td>
+                                }
+                                else
+                                {
+                                    <td style="color: #e53935">@i.Status</td>
+
+                                }
+                            }
+                            <td style="text-align: left; padding-left: 30px;">
+                                <a asp-controller="Supplier" asp-action="ViewInv" asp-route-id="@i.InvoiceId">View<img src="~/images/arrow-right.svg" /></a>
+
+                                @if (i.SenderId == Context.Session.GetInt32("UserId") && i.Status == "Current")
+                                {
+                                    <a asp-controller="Supplier" asp-action="EditInv" asp-route-id="@i.InvoiceId">Edit<img src="~/images/arrow-right.svg" /></a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </table>
+        }
+    }
+</main>
+

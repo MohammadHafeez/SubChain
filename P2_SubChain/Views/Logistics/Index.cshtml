@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<P2_SubChain.Models.Users>
+@{
     ViewBag.Title = "Home";
 }
 
@@ -13,7 +14,7 @@
         <ul>
             <li><a href="~/Supplier/Index">Home</a></li>
             <li><a href="~/Supplier/Create">New Product</a></li>
-            @*<li><a href="~/Invoice/Create">Invoice</a></li>*@
+            <li><a href="~/Supplier/Invoice">Invoice</a></li>
             <li><a href="~/Supplier/Communication">Communication</a></li>
             <li><a href="~/Home/SignOut">Sign Out</a></li>
         </ul>
@@ -24,6 +25,21 @@
         <div class="line-graph" id="line-graph"></div>
         <div class="piechart" id="piechart"></div>
     </div>
+    <section class="supplier_btm">
+        <h2>@TempData["ChainStatus"]</h2>
+        <div>
+            @if (Model.Count() != 0)
+            {
+                @foreach (Users u in Model)
+                {
+                    <article>
+                        <p>@u.CompanyName</p>
+                        <p>@u.CompanyType</p>
+                    </article>
+                }
+            }
+        </div>
+    </section>
 </main>
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/series-label.js"></script>
@@ -81,9 +97,6 @@
         title: {
             text: 'Monthly Average Revenue'
         },
-        subtitle: {
-            text: 'Source: WorldClimate.com'
-        },
         xAxis: {
             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         },
@@ -103,9 +116,6 @@
         series: [{
             name: 'Revenue',
             data: [11550, 11668, 10565, 11868, 11960, 11722, 11286, 11128, 10416, 11780, 10791, 11171]
-        }, {
-            name: 'London',
-            data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
         }]
     });
 </script>
