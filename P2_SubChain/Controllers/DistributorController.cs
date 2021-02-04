@@ -18,10 +18,48 @@ namespace P2_SubChain.Controllers
         InvoiceDAL invoiceContext = new InvoiceDAL();
         ProductDAL productContext = new ProductDAL();
         CommunicationDAL communicationContext = new CommunicationDAL();
+        ChainDAL chainContext = new ChainDAL();
 
         public IActionResult Index()
         {
-            return View();
+            // creating chain viewmodel;
+            ChainViewModel chainViewModel = new ChainViewModel();
+            foreach (Chain c in chainContext.GetAllChains())
+            {
+                if (c.ChainOwner == HttpContext.Session.GetInt32("UserId"))
+                {
+                    chainViewModel.Status = c.Status;
+
+                    if (c.EfficientChain != null)
+                    {
+                        foreach (int userId in c.EfficientChain.Split(",").Select(Int32.Parse).ToList())
+                        {
+                            foreach (Users u in userContext.GetAllUser())
+                            {
+                                if (userId == u.UserId)
+                                {
+                                    chainViewModel.EfficientChain.Add(u);
+                                }
+                            }
+                        }
+                    }
+
+                    if (c.ResponsiveChain != null)
+                    {
+                        foreach (int userId in c.ResponsiveChain.Split(",").Select(Int32.Parse).ToList())
+                        {
+                            foreach (Users u in userContext.GetAllUser())
+                            {
+                                if (userId == u.UserId)
+                                {
+                                    chainViewModel.ResponsiveChain.Add(u);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return View(chainViewModel);
         }
 
         public IActionResult SignUp()
@@ -78,9 +116,16 @@ namespace P2_SubChain.Controllers
             // signing user up
             Users user = new Users { CompanyName = companyName, CompanyType = "Distributor", Email = email, Password = pass };
             int id = userContext.AddUser(user);
-
             HttpContext.Session.SetInt32("UserId", id);
-            return RedirectToAction("Index", "Distributor");
+
+            // creating a new chain
+            Chain chain = new Chain { ChainOwner = id };
+            chain.ChainId = chainContext.CreateChain(chain);
+
+            HttpContext.Session.SetInt32("ChainId", chain.ChainId);
+            HttpContext.Session.SetString("ChainStatus", "Efficient");
+
+            return RedirectToAction("Index");
         }
 
         public IActionResult SignIn()
@@ -99,7 +144,16 @@ namespace P2_SubChain.Controllers
                 if (user.Email == email && user.Password == pass)
                 {
                     HttpContext.Session.SetInt32("UserId", user.UserId);
-                    return RedirectToAction("Index", "Distributor");
+
+                    foreach (Chain chain in chainContext.GetAllChains())
+                    {
+                        if (chain.ChainOwner == user.UserId)
+                        {
+                            HttpContext.Session.SetInt32("ChainId", chain.ChainId);
+                            HttpContext.Session.SetString("ChainStatus", chain.Status);
+                        }
+                    }
+                    return RedirectToAction("Index");
                 }
             }
 
@@ -109,58 +163,146 @@ namespace P2_SubChain.Controllers
 
         public IActionResult Invoice()
         {
-
-            List<Invoice> invoiceList = invoiceContext.GetAllInvoice();
+            List<Invoice> invoiceList = new List<Invoice>();
+            foreach (Invoice i in invoiceContext.GetAllInvoice())
+            {
+                if (i.ChainId == HttpContext.Session.GetInt32("ChainId") && i.ChainStatus == HttpContext.Session.GetString("ChainStatus"))
+                {
+                    invoiceList.Add(i);
+                }
+            }
             return View(invoiceList);
         }
 
 
         public IActionResult CreateInv()
         {
-            return View();
+            string userIdString = null;
+            foreach (Chain c in chainContext.GetAllChains())
+            {
+                if (c.ChainId == HttpContext.Session.GetInt32("ChainId"))
+                {
+                    if (HttpContext.Session.GetString("ChainStatus") == "Efficient")
+                    {
+                        userIdString = c.EfficientChain;
+                    }
+                    else if (HttpContext.Session.GetString("ChainStatus") == "Responsive")
+                    {
+                        userIdString = c.ResponsiveChain;
+                    }
+                }
+            }
+
+            if (userIdString == null)
+            {
+                TempData["NoChain"] = "Add Intermediaries to your Chain";
+                return RedirectToAction("Invoice", "Distributor");
+            }
+
+            List<Users> userList = new List<Users>();
+            List<int> userIds = userIdString.Split(",").Select(Int32.Parse).ToList();
+            foreach (Users u in userContext.GetAllUser())
+            {
+                foreach (int userId in userIds)
+                {
+                    if (userId == u.UserId)
+                    {
+                        userList.Add(u);
+                    }
+                }
+            }
+            return View(userList);
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateInv(Invoice invoice)
+        public async Task<ActionResult> CreateInv(int receiverId, IFormFile file)
         {
-            invoice.ChainId = 1;
-            invoice.UploadDate = DateTime.Now;
+            Invoice invoice = new Invoice { ChainId = Convert.ToInt32(HttpContext.Session.GetInt32("ChainId")), 
+                                            SenderId = Convert.ToInt32(HttpContext.Session.GetInt32("UserId")),
+                                            ChainStatus = HttpContext.Session.GetString("ChainStatus"),
+                                            ReceiverId = receiverId,
+                                            UploadDate = DateTime.Now};
 
             // Find the filename extension of the file to be uploaded.
-            string fileExt = Path.GetExtension(invoice.File.FileName);
+            string fileExt = Path.GetExtension(file.FileName);
 
-            int invoiceId = invoiceContext.GetAllInvoice().Count + 1;
-            string uploadedFile = "Ivoice" + invoiceId + fileExt;
+            List<Invoice> invoiceList = invoiceContext.GetAllInvoice();
+            foreach (Invoice i in invoiceContext.GetAllInvoice())
+            {
+                if (i.ChainId == HttpContext.Session.GetInt32("ChainId") && i.ChainStatus == HttpContext.Session.GetString("ChainStatus"))
+                {
+                    invoiceList.Add(i);
+                }
+            }
+
+            string uploadedFile = "Invoice" + invoiceList.Count+1 + fileExt;
             string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\invoice", uploadedFile);
             // Upload the file to server
             using (var fileSteam = new FileStream(savePath, FileMode.Create))
             {
-                await invoice.File.CopyToAsync(fileSteam);
+                await file.CopyToAsync(fileSteam);
             }
             invoice.Filename = uploadedFile;
             invoiceContext.AddInvoice(invoice);
 
-            List<Invoice> invoiceList = invoiceContext.GetAllInvoice();
-            return RedirectToAction("Invoice", invoiceList);
+            return RedirectToAction("Invoice");
         }
 
-        //public ActionResult Edit(Invoice invoice)
-        //{
+        public IActionResult ViewInv(int id)
+        {
+            Invoice invoice = new Invoice();
+            foreach (Invoice i in invoiceContext.GetAllInvoice())
+            {
+                if (i.InvoiceId == id)
+                {
+                    invoice = i;
+                }
+            }
+            return View(invoice);
+        }
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        //Add staff record to database
-        //        invoice.DistributorID = invoiceContext.Update(invoice);
-        //        //Redirect user to Staff/Index view
-        //        return RedirectToAction("Invoice");
-        //    }
-        //    else
-        //    {
-        //        //Input validation fails, return to the Create view
-        //        //to display error message
-        //        return View(invoice);
-        //    }
-        //}
+        public ActionResult EditInv(int id)
+        {
+            Invoice invoice = new Invoice();
+            foreach (Invoice i in invoiceContext.GetAllInvoice())
+            {
+                if (i.InvoiceId == id)
+                {
+                    invoice = i;
+                }
+            }
+
+            return View(invoice);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditInv(int id, IFormFile file)
+        {
+            Invoice invoice = new Invoice();
+            foreach (Invoice i in invoiceContext.GetAllInvoice())
+            {
+                if (i.InvoiceId == id)
+                {
+                    invoice = i;
+                    invoiceContext.UpdateInvoice(invoice.InvoiceId);
+                }
+            }
+
+            // Find the filename extension of the file to be uploaded.
+            string fileExt = Path.GetExtension(file.FileName);
+
+            string uploadedFile = "Updated_Invoice" + invoice.InvoiceId + fileExt;
+            string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\invoice", uploadedFile);
+            // Upload the file to server
+            using (var fileSteam = new FileStream(savePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileSteam);
+            }
+            invoice.Filename = uploadedFile;
+            invoiceContext.AddInvoice(invoice);
+
+            return RedirectToAction("Invoice");
+        }
 
         [HttpPost]
         public IActionResult Search(IFormCollection formdata)
@@ -173,7 +315,7 @@ namespace P2_SubChain.Controllers
             {
                 if (u.CompanyType == "Supplier" || u.CompanyType == "Logistics")
                 {
-                    if (u.CompanyName.Contains(companyName) || u.ProductCategory.Contains(cat))
+                    if (u.CompanyName.Contains(companyName) && u.ProductCategory.Contains(cat))
                     {
                         userList.Add(u);
                     }
@@ -285,7 +427,7 @@ namespace P2_SubChain.Controllers
         public IActionResult Chat(IFormCollection formdata)
         {
             int chatId = Convert.ToInt32(formdata["chatId"]);
-            int senderId = Convert.ToInt32(formdata["chatId"]);
+            int senderId = Convert.ToInt32(formdata["senderId"]);
             string message = formdata["message"];
 
             Messages newMessage = new Messages { ChatId = chatId, SenderId = senderId, Message = message, Timestamp = DateTime.Now };
@@ -319,7 +461,122 @@ namespace P2_SubChain.Controllers
                 }
             }
 
+            viewModel.ChatId = chatId;
             return View(viewModel);
+        }
+
+        public IActionResult AddIntermediary(string chain)
+        {
+            AddIntermediaryViewModel viewModel = new AddIntermediaryViewModel { ChainType = chain };
+
+            foreach (Users u in userContext.GetAllUser())
+            {
+                if (u.CompanyType != "Distributor")
+                {
+                    viewModel.UserList.Add(u);
+                }
+            }
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult AddIntermediary(IFormCollection formdata)
+        {
+            string status = formdata["chain"];
+            int userId = Convert.ToInt32(formdata["userId"]);
+
+            string chain = null;
+            foreach (Chain c in chainContext.GetAllChains())
+            {
+                if (c.ChainId == HttpContext.Session.GetInt32("ChainId"))
+                {
+                    if (status == "Efficient")
+                    {
+                        chain = c.EfficientChain;
+                    }
+                    else if (status == "Responsive")
+                    {
+                        chain = c.ResponsiveChain;
+                    }
+                }
+            }
+
+            string newChain = null;
+            List<int> supplierIds = new List<int>();
+
+            if (chain != null)
+            {
+                supplierIds = chain.Split(',').Select(Int32.Parse).ToList();
+                supplierIds.Add(userId);
+                newChain = string.Join(",", supplierIds);
+            }
+            else
+            {
+                newChain = Convert.ToString(userId);
+            }
+
+            if (status == "Efficient")
+            {
+                chainContext.SetEfficientChain(newChain, Convert.ToInt32(HttpContext.Session.GetInt32("ChainId")));
+            }
+            else if (status == "Responsive")
+            {
+                chainContext.SetResponsiveChain(newChain, Convert.ToInt32(HttpContext.Session.GetInt32("ChainId")));
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult DelEfficientIntermediary(int id)
+        {
+            List<int> userIds = new List<int>();
+            string userIdString = null;
+            foreach (Chain c in chainContext.GetAllChains())
+            {
+                if (c.ChainId == HttpContext.Session.GetInt32("ChainId"))
+                {
+                    userIdString = c.EfficientChain;
+                }
+            }
+
+            userIds = userIdString.Split(',').Select(Int32.Parse).ToList();
+            userIds.Remove(id);
+            string newUserIdString = string.Join(",", userIds);
+            chainContext.SetEfficientChain(newUserIdString, Convert.ToInt32(HttpContext.Session.GetInt32("ChainId")));
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult DelResponsiveIntermediary(int id)
+        {
+            List<int> userIds = new List<int>();
+            string userIdString = null;
+            foreach (Chain c in chainContext.GetAllChains())
+            {
+                if (c.ChainId == HttpContext.Session.GetInt32("ChainId"))
+                {
+                    userIdString = c.ResponsiveChain;
+                }
+            }
+
+            userIds = userIdString.Split(',').Select(Int32.Parse).ToList();
+            userIds.Remove(id);
+            string newUserIdString = string.Join(",", userIds);
+            chainContext.SetResponsiveChain(newUserIdString, Convert.ToInt32(HttpContext.Session.GetInt32("ChainId")));
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult SwitchType(IFormCollection formdata)
+        {
+            string status = formdata["status"];
+            if (status == null)
+            {
+                status = "Efficient";
+            }
+            chainContext.SetStatus(status, Convert.ToInt32(HttpContext.Session.GetInt32("ChainId")));
+            HttpContext.Session.SetString("ChainStatus", status);
+            return RedirectToAction("Index");
         }
     }
     

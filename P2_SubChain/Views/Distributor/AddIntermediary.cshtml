@@ -1,0 +1,38 @@
+﻿@model P2_SubChain.Models.AddIntermediaryViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Home";
+
+}
+
+<header>
+    <img src="~/images/logo.svg" alt="" />
+    <div class="burger">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+    </div>
+    <nav class="cust__nav">
+        <ul>
+            <li><a href="~/Distributor/Index">Home</a></li>
+            <li><a href="~/Distributor/Invoice">Invoices</a></li>
+            <li><a href="~/Distributor/Communication">Communication</a></li>
+            <li><a href="~/Home/SignOut">Sign Out</a></li>
+        </ul>
+    </nav>
+</header>
+<main class="addIntermediary">
+    <h2>Adding intermediary to @Model.ChainType Chain</h2>
+    <form method="post" action="~/Distributor/AddIntermediary" >
+        <select name="userId" >
+            <option value="#" >Select User</option>
+            @foreach (Users user in Model.UserList)
+            {
+                <option value="@user.UserId">@user.CompanyName</option>
+            }
+        </select>
+        <input name="chain" type="text" value="@Model.ChainType" style="display: none;" />
+        <button type="submit" >Add user</button>
+    </form>
+</main>

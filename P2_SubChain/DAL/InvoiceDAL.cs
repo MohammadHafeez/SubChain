@@ -29,28 +29,24 @@ namespace P2_SubChain.DAL
         {
             SqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = @"Select * from Invoice";
+            List<Invoice> invoiceList = new List<Invoice>();
+
 
             conn.Open();
             SqlDataReader reader = cmd.ExecuteReader();
-
-            List<Invoice> invoiceList = new List<Invoice>();
             while (reader.Read())
             {
-                Invoice invoice = new Invoice();
-                invoice.InvoiceId = reader.GetInt32(0);
-                invoice.ChainId = reader.GetInt32(1);
-                invoice.SenderId = reader.GetInt32(2);
-                invoice.Filename = reader.GetString(3);
-                invoice.UploadDate = reader.GetDateTime(4);
-                if (reader.IsDBNull(5))
+                invoiceList.Add(new Invoice
                 {
-                    invoice.EditDate = null;
-                }
-                else
-                {
-                    invoice.EditDate = reader.GetDateTime(5);
-                }
-                invoiceList.Add(invoice);
+                    InvoiceId = reader.GetInt32(0),
+                    ChainId = reader.GetInt32(1),
+                    SenderId = reader.GetInt32(2),
+                    ReceiverId = reader.GetInt32(3),
+                    Filename = reader.GetString(4),
+                    Status = reader.GetString(5),
+                    ChainStatus = reader.GetString(6),
+                    UploadDate = reader.GetDateTime(7),
+                });
             }
             reader.Close();
             conn.Close();
@@ -63,12 +59,15 @@ namespace P2_SubChain.DAL
 
             SqlCommand cmd = conn.CreateCommand();
 
-            cmd.CommandText = @"INSERT INTO Invoice (ChainId, SenderId, Filename, UploadDate)
-            OUTPUT INSERTED.ChainId VALUES(@cId, @sId, @fN, @uD)";
+            cmd.CommandText = @"INSERT INTO Invoice (ChainId, SenderId, ReceiverId, Filename, Status, ChainStatus, UploadDate)
+            OUTPUT INSERTED.ChainId VALUES(@cId, @sId, @rId, @fN, @s, @cS, @uD)";
 
             cmd.Parameters.AddWithValue("@cId", invoice.ChainId);
             cmd.Parameters.AddWithValue("@sId", invoice.SenderId);
+            cmd.Parameters.AddWithValue("@rId", invoice.ReceiverId);
             cmd.Parameters.AddWithValue("@fN", invoice.Filename);
+            cmd.Parameters.AddWithValue("@s", "Current");
+            cmd.Parameters.AddWithValue("@cS", invoice.ChainStatus);
             cmd.Parameters.AddWithValue("@uD", invoice.UploadDate);
 
             conn.Open();
@@ -76,18 +75,15 @@ namespace P2_SubChain.DAL
             conn.Close();
         }
 
-        //public int Update(Invoice invoice)
-        //{
-        //    SqlCommand cmd = conn.CreateCommand();
-        //    cmd.CommandText = @"Update invoice set supplierid = @supplierid, date=@date 
-        //                            where @selectedid = distributorID";
-        //    cmd.Parameters.AddWithValue("@supplierid", invoice.SupplierID);
-        //    cmd.Parameters.AddWithValue("@date", invoice.IDate);
-        //    cmd.Parameters.AddWithValue("@selectedid", invoice.DistributorID);
-        //    conn.Open();
-        //    int count = cmd.ExecuteNonQuery();
-        //    conn.Close();
-        //    return count;
-        //}
+        public void UpdateInvoice(int id)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"Update invoice set [Status] = 'Outdated' where [InvoiceId] = @id";
+            cmd.Parameters.AddWithValue("@id", id);
+
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
     }
 }

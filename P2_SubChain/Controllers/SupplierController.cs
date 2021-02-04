@@ -265,7 +265,7 @@ namespace P2_SubChain.Controllers
         public IActionResult Chat(IFormCollection formdata)
         {
             int chatId = Convert.ToInt32(formdata["chatId"]);
-            int senderId = Convert.ToInt32(formdata["chatId"]);
+            int senderId = Convert.ToInt32(formdata["senderId"]);
             string message = formdata["message"];
 
             Messages newMessage = new Messages { ChatId = chatId, SenderId = senderId, Message = message, Timestamp = DateTime.Now };
@@ -299,6 +299,7 @@ namespace P2_SubChain.Controllers
                 }
             }
 
+            viewModel.ChatId = chatId;
             return View(viewModel);
         }
     }

@@ -14,12 +14,16 @@ namespace P2_SubChain.Models
 
         public int SenderId { get; set; }
 
+        public int ReceiverId { get; set; }
+
         public string Filename { get; set; }
+
+        public string Status { get; set; }
+
+        public string ChainStatus { get; set; }
 
         public IFormFile File { get; set; }
 
         public DateTime UploadDate { get; set; }
-
-        public DateTime? EditDate { get; set; }
     }
 }

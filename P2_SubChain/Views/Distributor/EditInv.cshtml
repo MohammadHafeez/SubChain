@@ -1,8 +1,7 @@
-﻿@model IEnumerable<P2_SubChain.Models.Users>
+﻿@model P2_SubChain.Models.Invoice
 @{
-    ViewBag.Title = "Create Invoice";
+    ViewBag.Title = "Messages";
 }
-
 
 <header>
     <img src="~/images/logo.svg" alt="" />
@@ -15,35 +14,34 @@
         <ul>
             <li><a href="~/Distributor/Index">Home</a></li>
             <li><a href="~/Distributor/Invoice">Invoices</a></li>
-            <li><a href="~/Distributor/Communication">Communication</a></li>
+            <li><a href="~/`Distributor/Communication">Communication</a></li>
             <li><a href="~/Home/SignOut">Sign Out</a></li>
         </ul>
     </nav>
 </header>
-<div class="create__invoice">
-    <h2>Create a new Invoice</h2>
-    <form method="post" action="~/Distributor/CreateInv" enctype="multipart/form-data">
-        <select name="receiverId">
-            <option value="#">Select User</option>
-            @foreach (Users user in Model)
-            {
-                <option value="@user.UserId">@user.CompanyName</option>
-            }
-        </select>
-        <div class="file__input" style="margin-top: 25px;">
+<main class="editInvoice">
+    <article>
+        <h2>Edit Invoice no. @Model.InvoiceId</h2>
+        <embed src="~/invoice/@Model.Filename" class="inv" />
+    </article>
+    <form method="post" action="~/Distributor/EditInv" enctype="multipart/form-data">
+        <div class="file__input">
             <div>
                 <img src="" alt="" id="file-preview" />
                 <p id="preview-text">No File has been selected</p>
             </div>
             <input name="file" type="file" id="default-btn" required />
+            <input name="id" type="number" style="display: none;" value="@Model.InvoiceId" />
             <button type="button" id="custom-btn">
                 <img src="~/images/upload.svg" alt="" />
                 <span>Choose a File</span>
             </button>
         </div>
-        <button class="submit" type="submit">Upload</button>
+        <input style="display: none;" asp-for="SenderId" value="@Context.Session.GetInt32("UserId")" />
+        <button class="submit" type="submit">Update</button>
+        <p style="text-align: center; color: forestgreen; margin-top: 35px;">@TempData["invoice_success"]</p>
     </form>
-</div>
+</main>
 <script>
     // File upload preview
     const custBtn = document.getElementById("custom-btn")

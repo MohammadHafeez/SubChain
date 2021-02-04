@@ -70,7 +70,7 @@ namespace P2_SubChain.DAL
         public List<Users> GetAllUser()
         {
             SqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = @"Select * from Users";
+            cmd.CommandText = @"Select * from [Users]";
             
             conn.Open();
             SqlDataReader reader = cmd.ExecuteReader();

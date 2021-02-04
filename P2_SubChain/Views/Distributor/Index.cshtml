@@ -1,5 +1,8 @@
-﻿@{
+﻿@model P2_SubChain.Models.ChainViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Home";
+
 }
 
 <header>
@@ -44,4 +47,101 @@
     <div class="image_box">
         <img src="~/images/image4.svg" />
     </div>
+</section>
+<section class="consumer_btm">
+    <h2>Manage between the two supply chain systems</h2>
+    <main>
+        <section class="efficient">
+            <article class="head" >
+                <h3>Efficient Supply Chain</h3>
+                <a asp-controller="Distributor" asp-action="AddIntermediary" asp-route-chain="Efficient" >Add Intermediary</a>
+            </article>
+            <div>
+                @if (Model.EfficientChain.Count != 0)
+                {
+                    @foreach (Users u in Model.EfficientChain)
+                    {
+                        if (Model.Status == "Efficient")
+                        {
+                            <article class="user_card active">
+                                <article>
+                                    <p>@u.CompanyName</p>
+                                    <p>@u.CompanyType</p>
+                                </article>
+                                <a asp-controller="Distributor" asp-action="DelEfficientIntermediary" asp-route-id="@u.UserId">Remove</a>
+                            </article>
+                        }
+                        else
+                        {
+                            <article class="user_card inactive">
+                                <article>
+                                    <p>@u.CompanyName</p>
+                                    <p>@u.CompanyType</p>
+                                </article>
+                                <a asp-controller="Distributor" asp-action="DelEfficientIntermediary" asp-route-id="@u.UserId">Remove</a>
+                            </article>
+                        }
+
+                    }
+                }
+            </div>
+        </section>
+        <form method="post" action="~/Distributor/SwitchType" >
+            <label class="switch">
+                @{
+                    if (Model.Status == "Efficient")
+                    {
+                        <input name="status" type="checkbox" value="Responsive" onclick="this.form.submit()">
+                    }
+                    else
+                    {
+                        <input name="status" type="checkbox" value="Efficient" onclick="this.form.submit()" checked>
+
+                    }
+                }
+                <span class="slider round"></span>
+            </label>
+        </form>
+        <section class="responsive">
+            <article class="head">
+                <h3>Responsive Supply Chain</h3>
+                <a asp-controller="Distributor" asp-action="AddIntermediary" asp-route-chain="Responsive"  >Add Intermediary</a>
+            </article>
+            <div>
+                @{
+                    if (Model.ResponsiveChain == null)
+                    {
+                        <p>No intermediaries Added</p>
+                    }
+                    else
+                    {
+                        @foreach (Users u in Model.ResponsiveChain)
+                        {
+                            if (Model.Status == "Efficient")
+                            {
+                                <article class="user_card inactive">
+                                    <article>
+                                        <p>@u.CompanyName</p>
+                                        <p>@u.CompanyType</p>
+                                    </article>
+                                    <a asp-controller="Distributor" asp-action="DelResponsiveIntermediary" asp-route-id="@u.UserId">Remove</a>
+                                </article>
+                            }
+                            else
+                            {
+                                <article class="user_card active">
+                                    <article>
+                                        <p>@u.CompanyName</p>
+                                        <p>@u.CompanyType</p>
+                                    </article>
+                                    <a asp-controller="Distributor" asp-action="DelResponsiveIntermediary" asp-route-id="@u.UserId">Remove</a>
+                                </article>
+                            }
+
+                        }
+                    }
+                }
+            </div>
+        </section>
+    </main>
 </section>

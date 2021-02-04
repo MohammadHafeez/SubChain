@@ -14,9 +14,8 @@
         <ul>
             <li><a href="~/Distributor/Index">Home</a></li>
             <li><a href="~/Distributor/Invoice">Invoices</a></li>
-            <li><a href="~/Communication/Index">Communication</a></li>
+            <li><a href="~/Distributor/Communication">Communication</a></li>
             <li><a href="~/Home/SignOut">Sign Out</a></li>
-            <li><a href="~/Distributor/CreateInv">Create</a></li>
         </ul>
     </nav>
 </header>
@@ -26,13 +25,15 @@
         {
         <article>
             <h2>No Invoices in this chain</h2>
-            <a href="~/Distributor/CreateInv" >Create</a>
+            <span style="color: red; font-size: 20px;">@TempData["NoChain"]</span>
+            <a href="~/Distributor/CreateInv">Create</a>
         </article>
         }
         else
         {
             <article>
                 <h2>Invoices</h2>
+                <span style="color: red; font-size: 20px;">@TempData["NoChain"]</span>
                 <a href="~/Distributor/CreateInv" >Create</a>
             </article>
             <table>
@@ -41,7 +42,7 @@
                     <th>Sender Id</th>
                     <th>File Name</th>
                     <th>Upload Date</th>
-                    <th>Edit Date</th>
+                    <th>Invoice Status</th>
                     <th></th>
                 </tr>
                 @{
@@ -52,12 +53,24 @@
                             <td>@i.SenderId</td>
                             <td>@i.Filename</td>
                             <td>@i.UploadDate</td>
-                            <td>@i.EditDate</td>
-                            <td>
-                                <a>
-                                    View
-                                    <img src="~/images/arrow-right.svg" />
-                                </a>
+                            @{ 
+                                if (i.Status == "Current")
+                                {
+                                    <td style="color: #43a047" >@i.Status</td>
+                                }
+                                else
+                                {
+                                    <td style="color: #e53935" >@i.Status</td>
+
+                                }
+                            }
+                            <td style="text-align: left; padding-left: 30px;">
+                                <a asp-controller="Distributor" asp-action="ViewInv" asp-route-id="@i.InvoiceId">View<img src="~/images/arrow-right.svg" /></a> 
+                               
+                                @if (i.SenderId == Context.Session.GetInt32("UserId") && i.Status == "Current")
+                                {
+                                    <a asp-controller="Distributor" asp-action="EditInv" asp-route-id="@i.InvoiceId">Edit<img src="~/images/arrow-right.svg" /></a>
+                                }
                             </td>
                         </tr>
                     }
