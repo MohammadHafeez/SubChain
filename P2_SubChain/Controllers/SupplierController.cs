@@ -29,45 +29,51 @@ namespace P2_SubChain.Controllers
                 if (c.Status == "Efficient")
                 {
                     userIdString = c.EfficientChain;
-                    userIds = userIdString.Split(",").Select(Int32.Parse).ToList();
-                    if (userIds.Contains(Convert.ToInt32(HttpContext.Session.GetInt32("UserId"))))
+                    if (userIdString != null)
                     {
-                        foreach (Users user in userContext.GetAllUser())
+                        userIds = userIdString.Split(",").Select(Int32.Parse).ToList();
+                        if (userIds.Contains(Convert.ToInt32(HttpContext.Session.GetInt32("UserId"))))
                         {
-                            foreach (int userId in userIds)
+                            foreach (Users user in userContext.GetAllUser())
                             {
-                                if (user.UserId == userId)
+                                foreach (int userId in userIds)
                                 {
-                                    userList.Add(user);
+                                    if (user.UserId == userId)
+                                    {
+                                        userList.Add(user);
+                                    }
                                 }
                             }
+                            TempData["ChainStatus"] = "Efficient Supply Chain";
+                            HttpContext.Session.SetString("ChainStatus", "Efficient");
+                            HttpContext.Session.SetInt32("ChainId", c.ChainId);
+                            return View(userList);
                         }
-                        TempData["ChainStatus"] = "Efficient Supply Chain";
-                        HttpContext.Session.SetString("ChainStatus", "Efficient");
-                        HttpContext.Session.SetInt32("ChainId", c.ChainId);
-                        return View(userList);
                     }
                 }
                 else if (c.Status == "Responsive")
                 {
                     userIdString = c.ResponsiveChain;
-                    userIds = userIdString.Split(",").Select(Int32.Parse).ToList();
-                    if (userIds.Contains(Convert.ToInt32(HttpContext.Session.GetInt32("UserId"))))
+                    if (userIdString != null)
                     {
-                        foreach (Users user in userContext.GetAllUser())
+                        userIds = userIdString.Split(",").Select(Int32.Parse).ToList();
+                        if (userIds.Contains(Convert.ToInt32(HttpContext.Session.GetInt32("UserId"))))
                         {
-                            foreach (int userId in userIds)
+                            foreach (Users user in userContext.GetAllUser())
                             {
-                                if (user.UserId == userId)
+                                foreach (int userId in userIds)
                                 {
-                                    userList.Add(user);
+                                    if (user.UserId == userId)
+                                    {
+                                        userList.Add(user);
+                                    }
                                 }
                             }
+                            TempData["ChainStatus"] = "Responsive Supply Chain";
+                            HttpContext.Session.SetString("ChainStatus", "Responsive");
+                            HttpContext.Session.SetInt32("ChainId", c.ChainId);
+                            return View(userList);
                         }
-                        TempData["ChainStatus"] = "Responsive Supply Chain";
-                        HttpContext.Session.SetString("ChainStatus", "Responsive");
-                        HttpContext.Session.SetInt32("ChainId", c.ChainId);
-                        return View(userList);
                     }
                 }
             }
